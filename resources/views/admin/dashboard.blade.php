@@ -7,6 +7,9 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         {{-- <h1 class="h3 mb-0 text-gray-800">Dashboard</h1> --}}
+        <a href="#" class="d-none d-sm-inline-block btn btn-primary shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50 me-1"></i> Generate Report
+        </a>
     </div>
 
     <!-- Dashboard Summary -->
@@ -195,7 +198,7 @@
                     <h5 class="data-card-title">
                         <i class="fas fa-store text-primary me-2"></i>Registered Sellers
                     </h5>
-                    <a href="{{ route('admin.sellers.index') }}" class="data-card-action">
+                    <a href="{{ route('admin.sellers') }}" class="data-card-action">
                         View All <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -249,6 +252,14 @@
 
 @section('scripts')
 <script>
-    // No scripts needed
+    // Generate a report function
+    function generateReport() {
+        toast.info('Generating report...', 'Report');
+        
+        // Simulate report generation
+        setTimeout(() => {
+            toast.success('Report generated successfully!', 'Report');
+        }, 2000);
+    }
 </script>
 @endsection

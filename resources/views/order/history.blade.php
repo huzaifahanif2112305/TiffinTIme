@@ -176,28 +176,6 @@
                 font-size: 1.8rem;
             }
         }
-
-        /* Cancelled order style */
-        .status-cancelled {
-            background-color: rgba(231, 76, 60, 0.1);
-            color: #e74c3c;
-        }
-        
-        .cancelled-reason {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            border-left: 3px solid #e74c3c;
-            font-size: 0.9rem;
-        }
-        
-        .cancelled-timestamp {
-            display: block;
-            font-size: 0.8rem;
-            color: #7f8c8d;
-            margin-top: 5px;
-        }
     </style>
 </head>
 <body>
@@ -269,7 +247,7 @@
                                 <div class="d-flex justify-content-between align-items-center mt-3">
                                     <div>
                                         <div class="text-muted">Total Price</div>
-                                        <div class="order-total">{{ number_format($order->total_amount, 2) }} PKR</div>
+                                        <div class="order-total">${{ number_format($order->total_amount, 2) }}</div>
                                     </div>
                                     
                                     <div class="order-actions">
@@ -283,22 +261,6 @@
                                         @endif
                                     </div>
                                 </div>
-                                
-                                @if($order->status === 'cancelled' && $order->cancellation_reason)
-                                <div class="cancelled-reason">
-                                    <strong>Cancellation Reason:</strong> {{ \Illuminate\Support\Str::limit($order->cancellation_reason, 100) }}
-                                    <span class="cancelled-timestamp">
-                                        Cancelled on: 
-                                        @if($order->cancelled_at && !is_string($order->cancelled_at))
-                                            {{ $order->cancelled_at->format('M d, Y h:i A') }}
-                                        @elseif($order->cancelled_at)
-                                            {{ date('M d, Y h:i A', strtotime($order->cancelled_at)) }}
-                                        @else
-                                            {{ date('M d, Y h:i A', strtotime($order->updated_at)) }}
-                                        @endif
-                                    </span>
-                                </div>
-                                @endif
                             </div>
                         </div>
                     </div>

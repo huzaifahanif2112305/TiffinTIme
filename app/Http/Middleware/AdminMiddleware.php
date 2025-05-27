@@ -17,7 +17,7 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->sellerType == 1) {
+        if (Auth::check() && Auth::user()->is_admin) {
             return $next($request);
         }
 
