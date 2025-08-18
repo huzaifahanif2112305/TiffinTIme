@@ -99,49 +99,79 @@ class OrderController extends Controller
     }
     public function placeOrder(Request $request)
     {
-        $service = $this->getService($request->service_id); 
-    
-        if (!$service) {
-            Log::error('Invalid service_id for order placement', ['service_id' => $request->service_id]);
-            return redirect()->route('home')->with('error', 'Invalid service.');
+        // Check if user is authenticated
+        if (!auth()->check()) {
+            Log::error('Unauthenticated user attempting to place order');
+            return redirect()->route('login')->with('error', 'Please login to place an order.');
         }
-    
-        // Check if seller exists
+        
+        // Check if cart exists and has items
         $cart = session('cart');
-        if (!$cart || !isset($cart[$service->id])) {
+        if (!$cart || empty($cart)) {
             Log::error('Cart data is invalid or empty for order placement');
             return redirect()->route('home')->with('error', 'Invalid cart data.');
         }
     
+        // Calculate total amount
         $totalAmount = collect($cart)->sum(function ($item) {
             return $item['price'] * $item['quantity'];
         });
-        $seller = Seller::find($cart[$service->id]['seller_id']);
+        
+        // Get the first service to determine seller (assuming all services are from same seller)
+        $firstServiceId = array_keys($cart)[0];
+        $firstService = $this->getService($firstServiceId);
+        
+        if (!$firstService) {
+            Log::error('Invalid service in cart for order placement', ['service_id' => $firstServiceId]);
+            return redirect()->route('home')->with('error', 'Invalid service.');
+        }
+        
+        // Get seller from the first service
+        $seller = Seller::find($cart[$firstServiceId]['seller_id']);
         if (!$seller) {
-            Log::error('Invalid seller_id for order placement', ['seller_id' => $cart[$service->id]['seller_id']]);
+            Log::error('Invalid seller_id for order placement', ['seller_id' => $cart[$firstServiceId]['seller_id']]);
             return redirect()->route('home')->with('error', 'Invalid seller.');
+        }
+        
+        // Check if all services in cart are from the same seller
+        $sellerIds = collect($cart)->pluck('seller_id')->unique();
+        if ($sellerIds->count() > 1) {
+            Log::error('Multiple sellers in cart not supported', ['seller_ids' => $sellerIds->toArray()]);
+            return redirect()->route('home')->with('error', 'All services must be from the same seller.');
+        }
+        
+        // Check if any cart item is missing seller_id
+        $itemsWithoutSeller = collect($cart)->filter(function ($item) {
+            return empty($item['seller_id']);
+        });
+        
+        if ($itemsWithoutSeller->count() > 0) {
+            Log::error('Cart items missing seller_id', ['items' => $itemsWithoutSeller->keys()->toArray()]);
+            return redirect()->route('home')->with('error', 'Some cart items are invalid. Please refresh your cart.');
         }
     
         try {
             Log::info('Attempting to place an order', [
-                'user' => auth()->user(),
-                'cart' => $cart,
+                'user_id' => auth()->id(),
+                'cart_count' => count($cart),
+                'total_amount' => $totalAmount,
+                'seller_id' => $seller->id,
+                'seller_name' => $seller->name,
             ]);
     
             // Validate inputs
             $request->validate([
-                'service_id' => 'required|exists:services,id',
                 'address' => 'required|string|max:255',
                 'phone' => 'required|string|max:15',
                 'payment_method' => 'required|in:cod,online',
-            'transaction_id' => 'required_if:payment_method,online|nullable|string|max:255',
+                'transaction_id' => 'required_if:payment_method,online|nullable|string|max:255',
             ]);
             
     
             // This will create the order with seller_id
             $order = Order::create([
                 'user_id' => Auth::id(),
-                'seller_id' => $cart[$service->id]['seller_id'],
+                'seller_id' => $cart[$firstServiceId]['seller_id'],
                 'address' => $request->address,
                 'phone' => $request->phone,
                 'status' => 'pending',

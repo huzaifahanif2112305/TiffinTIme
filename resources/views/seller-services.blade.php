@@ -375,37 +375,61 @@
         </div>
     </section>
 
-    <!-- Feedback Section -->
+    <!-- Customer Testimonials Section -->
     @if(isset($feedbacks) && $feedbacks->count() > 0)
-        <section class="container feedback-section mb-5">
-            <h2 class="feedback-title">Customer Feedback</h2>
-            
-            <div class="row g-4 mt-4">
-                @foreach ($feedbacks as $feedback)
-                    <div class="col-md-6">
-                        <div class="feedback-card">
-                            <p class="feedback-text">"{{ $feedback->feedback }}"</p>
-                            <div class="feedback-user">
-                                <div class="feedback-user-avatar">
-                                    {{ substr($feedback->user->name ?? 'A', 0, 1) }}
+        <section class="testimonials-section">
+            <div class="container">
+                <div class="section-header text-center mb-5">
+                    <h2 class="section-title">Customer Testimonials</h2>
+                    <p class="section-subtitle">What customers say about this seller's services</p>
+                </div>
+                
+                <div class="testimonials-grid">
+                    @foreach ($feedbacks as $feedback)
+                        <div class="testimonial-card">
+                            <div class="testimonial-content">
+                                <div class="quote-icon">
+                                    <i class="fas fa-quote-left"></i>
                                 </div>
-                                <div class="feedback-user-info">
-                                    <div class="feedback-user-name">{{ $feedback->user->name ?? 'Anonymous' }}</div>
-                                    <div class="feedback-order-id">Order #{{ $feedback->order_id }}</div>
+                                <p class="testimonial-text">{{ $feedback->feedback }}</p>
+                            </div>
+                            
+                            <div class="testimonial-footer">
+                                <div class="customer-info">
+                                    <div class="customer-avatar">
+                                        <span>{{ substr($feedback->user ? $feedback->user->name : 'A', 0, 1) }}</span>
+                                    </div>
+                                    <div class="customer-details">
+                                        <h5 class="customer-name">{{ $feedback->user ? $feedback->user->name : 'Anonymous' }}</h5>
+                                        <p class="customer-meta">
+                                            <i class="fas fa-hashtag"></i>
+                                            Order #{{ $feedback->order_id }}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="service-provider">
+                                    <span class="provider-label">Order Date:</span>
+                                    <span class="provider-name">{{ $feedback->order ? $feedback->order->created_at->format('M d, Y') : 'N/A' }}</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
         </section>
     @else
-        <div class="container mb-5">
-            <div class="text-center py-4 text-muted">
-                <i class="fas fa-comments d-block mb-3" style="font-size: 2rem; color: #ddd;"></i>
-                <p>No feedback available for this seller yet.</p>
+        <section class="testimonials-section">
+            <div class="container">
+                <div class="no-testimonials text-center py-5">
+                    <div class="no-testimonials-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h4>No testimonials yet</h4>
+                    <p>Be the first to share your experience with this seller!</p>
+                </div>
             </div>
-        </div>
+        </section>
     @endif
 
     <!-- Floating Cart Button -->

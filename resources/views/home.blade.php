@@ -12,6 +12,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/logo.css') }}">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
 /* Modern Logo Styles */
@@ -269,35 +271,189 @@
     </div>
 </header>
 
-<section class="slider" id="home">
+<!-- Hero Section -->
+<section class="hero-section" id="home">
+    <div class="hero-background">
+        <div class="hero-particles"></div>
+        <div class="hero-gradient"></div>
+    </div>
+    
     <div class="container">
-        <div class="slider-content">
-            <h1>Welcome to Laundrify</h1>
-            <p>Experience the convenience of professional laundry services at your doorstep. We take care of your clothes, so you can focus on what matters most.</p>
-            <a href="#" class="btn">Get Started</a>
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="hero-badge">
+                    <i class="fas fa-star"></i>
+                    <span>Trusted by 10,000+ customers</span>
+                </div>
+                
+                <h1 class="hero-title">
+                    <span class="gradient-text">Fresh Clothes,</span>
+                    <br>Fresh Start
+                </h1>
+                
+                <p class="hero-description">
+                    Experience the future of laundry services. Professional cleaning, 
+                    doorstep delivery, and eco-friendly solutions - all at your fingertips.
+                </p>
+                
+                <div class="hero-actions">
+                    <a href="#services" class="btn btn-primary btn-lg">
+                        <i class="fas fa-tshirt me-2"></i>
+                        Explore Services
+                    </a>
+                    <a href="#about" class="btn btn-outline btn-lg">
+                        <i class="fas fa-play me-2"></i>
+                        Learn More
+                    </a>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Service</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">99%</div>
+                        <div class="stat-label">Satisfaction</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1hr</div>
+                        <div class="stat-label">Delivery</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="hero-image-container">
+                    <img src="{{ asset('images/main-body.jpg') }}" alt="Laundry Service" class="hero-image">
+                    <div class="hero-image-overlay"></div>
+                </div>
+                
+                <div class="floating-card card-1">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Quality Assured</span>
+                </div>
+                
+                <div class="floating-card card-2">
+                    <i class="fas fa-truck"></i>
+                    <span>Free Delivery</span>
+                </div>
+                
+                <div class="floating-card card-3">
+                    <i class="fas fa-leaf"></i>
+                    <span>Eco-Friendly</span>
+                </div>
+            </div>
         </div>
-        <div class="slider-image">
-            <img src="{{ asset('images/main-body.jpg') }}" alt="Laundry Service">
-        </div>
+    </div>
+    
+    <div class="scroll-indicator">
+        <div class="scroll-arrow"></div>
+        <span>Scroll to explore</span>
     </div>
 </section>
 
-<section class="usp">
+<!-- Features Section -->
+<section class="features-section">
     <div class="container">
-        <h2>Why Choose Laundrify?</h2>
-        <div class="usp-cards">
-            <div class="usp-card">
-                <h3>Quality Service</h3>
-                <p>We use the best detergents and state-of-the-art equipment to ensure your clothes are cleaned to perfection.</p>
+        <div class="section-header text-center">
+            <h2 class="section-title">Why Choose Laundrify?</h2>
+            <p class="section-subtitle">Experience the difference with our premium laundry services</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <h3 class="feature-title">Premium Quality</h3>
+                <p class="feature-description">
+                    Professional-grade detergents and state-of-the-art equipment ensure your clothes 
+                    receive the finest care possible.
+                </p>
+                <div class="feature-highlight">
+                    <i class="fas fa-check"></i>
+                    <span>100% Quality Guarantee</span>
+                </div>
             </div>
-            <div class="usp-card">
-                <h3>Fast Turnaround</h3>
-                <p>Get your clothes back in as little as 24 hours with our express service option.</p>
+            
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3 class="feature-title">Lightning Fast</h3>
+                <p class="feature-description">
+                    Express service available with same-day turnaround. 
+                    Get your clothes back when you need them most.
+                </p>
+                <div class="feature-highlight">
+                    <i class="fas fa-check"></i>
+                    <span>Same Day Service</span>
+                </div>
             </div>
-            <div class="usp-card">
-                <h3>Eco-Friendly</h3>
-                <p>We use environmentally friendly cleaning methods to reduce our carbon footprint.</p>
+            
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-icon">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <h3 class="feature-title">Eco-Friendly</h3>
+                <p class="feature-description">
+                    Sustainable cleaning methods and biodegradable products 
+                    to protect both your clothes and the environment.
+                </p>
+                <div class="feature-highlight">
+                    <i class="fas fa-check"></i>
+                    <span>Green Certified</span>
+                </div>
             </div>
+            
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-icon">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <h3 class="feature-title">Doorstep Service</h3>
+                <p class="feature-description">
+                    Convenient pickup and delivery right to your doorstep. 
+                    No more trips to the laundry - we come to you.
+                </p>
+                <div class="feature-highlight">
+                    <i class="fas fa-check"></i>
+                    <span>Free Pickup & Delivery</span>
+                </div>
+            </div>
+            
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="feature-title">Secure & Safe</h3>
+                <p class="feature-description">
+                    Your clothes are handled with care in secure facilities. 
+                    Advanced tracking ensures you always know where they are.
+                </p>
+                <div class="feature-highlight">
+                    <i class="fas fa-check"></i>
+                    <span>Real-time Tracking</span>
+                </div>
+            </div>
+            
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="600">
+                <div class="feature-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3 class="feature-title">24/7 Support</h3>
+                <p class="feature-description">
+                    Round-the-clock customer support to answer your questions 
+                    and resolve any concerns immediately.
+                </p>
+                <div class="feature-highlight">
+                    <i class="fas fa-check"></i>
+                    <span>Always Available</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
         </div>
     </div>
 </section>
@@ -343,95 +499,204 @@
     </div>
 </section>
 
-<section class="services" id="services">
+<!-- Services Section -->
+<section class="services-section" id="services">
     <div class="container">
-        <h2 class="my-4">Our Services</h2>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="section-header text-center" data-aos="fade-up">
+            <h2 class="section-title">Our Premium Services</h2>
+            <p class="section-subtitle">Discover a wide range of professional laundry services tailored to your needs</p>
+        </div>
+        
+        <div class="services-grid">
             @auth
                 @if ($services->isEmpty())
-                    <p>No services available.</p>
+                    <div class="no-services" data-aos="fade-up">
+                        <div class="no-services-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <h4>No services available</h4>
+                        <p>Check back soon for new laundry services!</p>
+                    </div>
                 @else
                     @foreach ($services as $service)
                         @if ($service->is_approved)
-                            <div class="col">
-                                <div class="card h-100">
-                                    <div class="card-img-top d-flex justify-content-center align-items-center" style="width: 120px; height: 120px; background-color: #f0f0f0; border-radius: 50%; overflow: hidden; margin: 0 auto;">
-                                        @if ($service->seller->profile_image && file_exists(public_path('storage/' . $service->seller->profile_image)))
-                                            <img src="{{ asset('storage/' . $service->seller->profile_image) }}" alt="{{ $service->seller->name }}" class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
+                            <div class="service-card" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
+                                <div class="service-header">
+                                    <div class="service-image">
+                                        @if ($service->image && file_exists(public_path('storage/' . $service->image)))
+                                            <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}">
                                         @else
-                                            <i class="fas fa-user" style="font-size: 70px; color: #aaa;"></i>
+                                            <div class="service-placeholder">
+                                                <i class="fas fa-tshirt"></i>
+                                            </div>
                                         @endif
                                     </div>
-
-                                    <div class="card-body d-flex flex-column">
-                                        <h5 class="card-title text-center">{{ $service->service_name }}</h5>
-
-                                        <div class="service-details">
-                                            <p><strong>Seller:</strong> 
-                                                {{ $service->seller->name }}
-                                                @if($service->seller->isVerified())
-                                                    <span class="verified-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="This seller has been verified by Laundrify">
-                                                        <i class="fas fa-check-circle"></i><span class="verified-text">Verified</span>
-                                                    </span>
-                                                @endif
-                                            </p>
-                                            <p><strong>Email:</strong> {{ $service->seller->email }}</p>
-                                            <p><strong>City:</strong> {{ $service->seller->city }}</p>
-                                            <p><strong>Area:</strong> {{ $service->seller->area }}</p>
-                                            <p><strong>Start Price:</strong> {{ $service->service_price }} PKR</p>
-                                        </div>
-
-                                        <div class="d-flex justify-content-center" style="width: 100%; height: 200px; background-color: #f0f0f0; align-items: center; justify-content: center;">
-                                            @if ($service->image && file_exists(public_path('storage/' . $service->image)))
-                                                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}" class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
+                                    
+                                    <div class="service-price">
+                                        <span class="price-amount">{{ $service->service_price }}</span>
+                                        <span class="price-currency">PKR</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="service-content">
+                                    <h3 class="service-title">{{ $service->service_name }}</h3>
+                                    <p class="service-description">{{ $service->service_description }}</p>
+                                    
+                                    <div class="service-seller">
+                                        <div class="seller-avatar">
+                                            @if ($service->seller->profile_image && file_exists(public_path('storage/' . $service->seller->profile_image)))
+                                                <img src="{{ asset('storage/' . $service->seller->profile_image) }}" alt="{{ $service->seller->name }}">
                                             @else
-                                                <i class="fas fa-image" style="font-size: 70px; color: #aaa;"></i>
+                                                <i class="fas fa-user"></i>
                                             @endif
                                         </div>
-
-                                        <p class="card-text description-line-clamp">
-                                            <strong>Description:</strong> {{ $service->service_description }}
-                                        </p>
-
-                                        <div class="service-meta d-flex justify-content-between">
-                                            <p><strong>Availability:</strong> {{ $service->availability }}</p>
-                                            <p><strong>Delivery Time:</strong> {{ $service->service_delivery_time }}</p>
-                                        </div>
-
-                                        <div class="button-container d-flex justify-content-between mt-auto">
-                                        <a href="{{ route('seller.services', ['seller_id' => $service->seller->id]) }}" class="btn btn-primary">Avail</a>
+                                        <div class="seller-info">
+                                            <h5 class="seller-name">{{ $service->seller->name }}</h5>
+                                            <p class="seller-location">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                {{ $service->seller->city }}, {{ $service->seller->area }}
+                                            </p>
+                                            @if($service->seller->isVerified())
+                                                <span class="verified-badge">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    Verified Seller
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
+                                    
+                                    <div class="service-meta">
+                                        <div class="meta-item">
+                                            <i class="fas fa-clock"></i>
+                                            <span>{{ $service->service_delivery_time }} days</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>{{ $service->availability }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="service-actions">
+                                    <a href="{{ route('seller.services', ['seller_id' => $service->seller->id]) }}" class="btn btn-primary btn-full">
+                                        <i class="fas fa-shopping-cart me-2"></i>
+                                        View Details
+                                    </a>
                                 </div>
                             </div>
                         @endif
                     @endforeach
                 @endif
             @else
-                <p>Please <a href="{{ route('login') }}">log in</a> to see the services.</p>
+                <div class="login-prompt" data-aos="fade-up">
+                    <div class="login-prompt-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h4>Login to view services</h4>
+                    <p>Please <a href="{{ route('login') }}" class="text-primary">log in</a> to see our available services.</p>
+                </div>
             @endauth
         </div>
     </div>
 </section>
-<section class="feedback">
-    <div class="container">
-        <h2 style="font-size: 40px; text-align: center;">What Our Customers Say</h2>
-        <div class="swiper-container">
-            <div class="swiper-wrapper">
-                @foreach ($feedbacks as $feedback)
-                    <div class="swiper-slide">
-                        <div class="feedback-card p-4 shadow-sm border rounded">
-                            <p style="font-size: 24px; font-weight: bold;">"{{ $feedback->feedback }}"</p>
-                            
-                            
-                            <h5><strong>Order Date:</strong> {{ $feedback->order->created_at->format('d M Y - h:i A') }}</h5>
 
-                            <h5><strong>Customer:</strong> {{ $feedback->user->name ?? 'Anonymous' }}</h5>
-                            <h5><strong>Seller:</strong> {{ $feedback->seller->name ?? 'N/A' }}</h5>
+<!-- Statistics Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" data-count="10000">0</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+            </div>
+            
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-icon">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" data-count="50000">0</div>
+                    <div class="stat-label">Clothes Cleaned</div>
+                </div>
+            </div>
+            
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" data-count="50">0</div>
+                    <div class="stat-label">Partner Sellers</div>
+                </div>
+            </div>
+            
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" data-count="98">0</div>
+                    <div class="stat-label">Satisfaction Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h2 class="section-title">What Our Customers Say</h2>
+            <p class="section-subtitle">Real feedback from satisfied customers who trust Laundrify</p>
+        </div>
+        
+        <div class="testimonials-grid">
+            @foreach ($feedbacks as $feedback)
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <div class="quote-icon">
+                            <i class="fas fa-quote-left"></i>
+                        </div>
+                        <p class="testimonial-text">{{ $feedback->feedback }}</p>
+                    </div>
+                    
+                    <div class="testimonial-footer">
+                        <div class="customer-info">
+                            <div class="customer-avatar">
+                                <span>{{ substr($feedback->user ? $feedback->user->name : 'A', 0, 1) }}</span>
+                            </div>
+                            <div class="customer-details">
+                                <h5 class="customer-name">{{ $feedback->user ? $feedback->user->name : 'Anonymous' }}</h5>
+                                <p class="customer-meta">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    {{ $feedback->order ? $feedback->order->created_at->format('M d, Y') : 'N/A' }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="service-provider">
+                            <span class="provider-label">Service by:</span>
+                            <span class="provider-name">{{ $feedback->seller ? $feedback->seller->name : 'N/A' }}</span>
                         </div>
                     </div>
-                @endforeach
-          
+                </div>
+            @endforeach
+        </div>
+        
+        @if($feedbacks->count() == 0)
+            <div class="no-testimonials text-center py-5">
+                <div class="no-testimonials-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h4>No testimonials yet</h4>
+                <p>Be the first to share your experience with Laundrify!</p>
+            </div>
+        @endif
     </div>
 </section>
 
@@ -453,50 +718,132 @@
     </div>
 </section>
 
-<footer class="bg-dark text-light py-5">
+<!-- Call to Action Section -->
+<section class="cta-section">
     <div class="container">
-        <div class="row">
-            <!-- About Laundrify Section -->
-            <div class="col-md-4 mb-4">
-                <h5 class="text-uppercase mb-4">About Laundrify</h5>
-                <p>
-                    Laundrify is your one-stop solution for hassle-free laundry services. From pickup to delivery, we ensure your clothes are handled with care, giving you more time for the things that matter.
+        <div class="cta-content" data-aos="fade-up">
+            <div class="cta-text">
+                <h2 class="cta-title">Ready to Experience Premium Laundry Services?</h2>
+                <p class="cta-description">
+                    Join thousands of satisfied customers who trust Laundrify for their laundry needs. 
+                    Get started today and enjoy the convenience of professional laundry services at your doorstep.
                 </p>
-                <p>Because fresh, clean clothes make a difference!</p>
+                <div class="cta-actions">
+                    <a href="#services" class="btn btn-primary btn-lg">
+                        <i class="fas fa-rocket me-2"></i>
+                        Get Started Now
+                    </a>
+                    <a href="#about" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Learn More
+                    </a>
+                </div>
             </div>
-
-            <!-- Tips & Tricks Section -->
-            <div class="col-md-4 mb-4">
-                <h5 class="text-uppercase mb-4">Laundry Tips & Tricks</h5>
-                <ul class="list-unstyled">
-                    <li>✔️ Separate whites and colors to avoid bleeding.</li>
-                    <li>✔️ Use cold water to preserve fabric quality.</li>
-                    <li>✔️ Turn clothes inside out to reduce wear and tear.</li>
-                    <li>✔️ Don't overload your washing machine for better results.</li>
-                </ul>
-            </div>
-
-            <!-- Subscribe Section -->
-            <div class="col-md-4 mb-4">
-                <h5 class="text-uppercase mb-4">Stay Connected</h5>
-                <p>Join our newsletter to get updates and exclusive discounts.</p>
-                <form action="#" method="POST" class="input-group">
-                    <input type="email" class="form-control" placeholder="Enter your email" required>
-                    <button class="btn btn-primary" type="submit">Subscribe</button>
-                </form>
-                <div class="mt-3">
-                    <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="text-light"><i class="fab fa-linkedin-in"></i></a>
+            <div class="cta-visual">
+                <div class="cta-image">
+                    <i class="fas fa-tshirt"></i>
                 </div>
             </div>
         </div>
+    </div>
+</section>
 
-        <!-- Footer Bottom -->
-        <div class="text-center mt-4">
-            <p class="mb-0">&copy; 2025 Laundrify. All rights reserved.</p>
-            <p class="mb-0">Designed with ❤️ by the Laundrify Team.</p>
+<!-- Enhanced Footer -->
+<footer class="footer-section">
+    <div class="footer-wave">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path fill="#1a202c" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+    </div>
+    
+    <div class="footer-content">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Company Info -->
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <div class="logo-container">
+                            <i class="fas fa-tshirt logo-icon"></i>
+                            <span class="logo-text">Laundrify</span>
+                        </div>
+                    </div>
+                    <p class="footer-description">
+                        Your trusted partner for premium laundry services. We combine technology with care to deliver exceptional results every time.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h5 class="footer-title">Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
+                        <li><a href="{{ route('login') }}">Login</a></li>
+                        <li><a href="{{ route('register') }}">Register</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services -->
+                <div class="footer-section">
+                    <h5 class="footer-title">Our Services</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Dry Cleaning</a></li>
+                        <li><a href="#">Wash & Iron</a></li>
+                        <li><a href="#">Express Service</a></li>
+                        <li><a href="#">Bulk Orders</a></li>
+                        <li><a href="#">Pickup & Delivery</a></li>
+                        <li><a href="#">Stain Removal</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact & Newsletter -->
+                <div class="footer-section">
+                    <h5 class="footer-title">Stay Updated</h5>
+                    <p class="newsletter-text">Subscribe to our newsletter for exclusive offers and updates.</p>
+                    <form class="newsletter-form">
+                        <div class="input-group">
+                            <input type="email" class="form-control" placeholder="Enter your email" required>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+92 300 1234567</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>info@laundrify.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Lahore, Pakistan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2025 Laundrify. All rights reserved.</p>
+                    <div class="footer-bottom-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Cookie Policy</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </footer>
@@ -513,11 +860,80 @@
 </script>
 
 <script>
-    // Initialize Bootstrap tooltips
+    // Initialize AOS (Animate On Scroll)
     document.addEventListener('DOMContentLoaded', function() {
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+        
+        // Initialize Bootstrap tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar-main');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Counter animation
+        const counters = document.querySelectorAll('.stat-number');
+        const speed = 200;
+        
+        const animateCounter = (counter) => {
+            const target = parseInt(counter.getAttribute('data-count'));
+            const count = parseInt(counter.innerText);
+            const increment = target / speed;
+            
+            if (count < target) {
+                counter.innerText = Math.ceil(count + increment);
+                setTimeout(() => animateCounter(counter), 1);
+            } else {
+                counter.innerText = target;
+            }
+        };
+        
+        // Intersection Observer for counter animation
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -100px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    animateCounter(counter);
+                    observer.unobserve(counter);
+                }
+            });
+        }, observerOptions);
+        
+        counters.forEach(counter => {
+            observer.observe(counter);
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
         });
     });
 </script>

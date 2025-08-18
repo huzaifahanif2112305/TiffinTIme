@@ -307,10 +307,7 @@
                         </div>
                     </div>
                     
-                    <!-- Hidden service_id -->
-                    @foreach ($cart as $item)
-                        <input type="hidden" name="service_id" value="{{ $item['id'] }}">
-                    @endforeach
+                    <!-- No need for service_id since we process all cart items -->
                 </form>
             </div>
             

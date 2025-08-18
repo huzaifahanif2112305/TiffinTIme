@@ -12,7 +12,11 @@ class HomeController extends Controller
 {
     public function showHomePage()
     {
-        $feedbacks = Feedback::latest()->get(); // Fetch all feedback
+        $feedbacks = Feedback::with(['user', 'seller', 'order'])
+            ->whereHas('user')
+            ->whereHas('seller')
+            ->latest()
+            ->get(); // Fetch only feedbacks with valid relationships
         $services = Service::where('is_approved', 1)->get();
         $sellers = Seller::where('is_deleted', false)->where('accountIsApproved', 1)->get();
         // $notifications = auth()->user()->notifications()->latest()->take(5)->get();

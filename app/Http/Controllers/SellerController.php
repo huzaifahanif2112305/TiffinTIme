@@ -158,7 +158,8 @@ class SellerController extends Controller
         // The feedback table uses seller_id but references the users table
         // We need to check if there's a corresponding user with the same ID
         $feedbacks = Feedback::where('seller_id', $seller_id)
-                    ->with('user')
+                    ->with(['user', 'seller', 'order'])
+                    ->whereHas('user')
                     ->get();
     
         return view('seller-services', compact('seller', 'services', 'feedbacks'));

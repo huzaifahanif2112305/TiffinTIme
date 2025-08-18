@@ -28,7 +28,8 @@ class ServiceController extends Controller
         
         // Get feedback for this seller
         $feedbacks = Feedback::where('seller_id', $seller_id)
-                      ->with('user')
+                      ->with(['user', 'seller', 'order'])
+                      ->whereHas('user')
                       ->get();
         
         return view('seller-services', compact('seller', 'services', 'feedbacks'));
