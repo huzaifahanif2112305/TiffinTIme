@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laundrify OTP Email</title>
+    <title>Tiffin Time OTP Email</title>
     <style>
         /* General Styles */
         body {
@@ -77,16 +77,16 @@
 <body>
     <div class="email-container">
         <div class="email-header">
-            Welcome to Laundrify
+            Welcome to Tiffin Time
         </div>
         <div class="email-content">
-            <p>Thank you for registering with Laundrify! Use the OTP below to complete your registration process:</p>
+            <p>Thank you for registering with Tiffin Time! Use the OTP below to complete your registration process:</p>
             <div class="otp-code">{{ $otp }}</div>
             <p>If you did not request this OTP, please ignore this email.</p>
         </div>
         <div class="email-footer">
-            &copy; 2025 Laundrify. All Rights Reserved. <br>
-            Need help? <a href="mailto:support@laundrify.com">Contact Support</a>
+            &copy; 2025 Tiffin Time. All Rights Reserved. <br>
+            Need help? <a href="mailto:support@tiffintime.com">Contact Support</a>
         </div>
     </div>
 </body>

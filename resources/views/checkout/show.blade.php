@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Laundrify</title>
+
+    <title>Checkout - Tiffin Time</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/styleHome.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
         .checkout-container {
             margin-top: 50px;
@@ -204,17 +206,12 @@
             background: linear-gradient(to right, var(--primary-dark), var(--primary-color));
         }
 
-        .invalid-feedback {
-            color: var(--danger);
-            font-size: 0.85rem;
-            margin-top: 5px;
-            font-weight: 500;
-        }
 
         @media (max-width: 768px) {
             .payment-services {
                 flex-direction: column;
             }
+
             .checkout-form,
             .order-summary {
                 padding: 20px;
@@ -222,6 +219,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Modern Navbar -->
     <header class="navbar-main">
@@ -229,11 +227,11 @@
             <div class="header-content">
                 <div class="logo">
                     <a href="{{ route('home') }}">
-                        <span class="logo-text">Laundrify</span>
-                        <span class="logo-icon"><i class="fas fa-tshirt"></i></span>
+                        <span class="logo-text">Tiffin Time</span>
+                        <span class="logo-icon"><i class="fas fa-utensils"></i></span>
                     </a>
                 </div>
-                
+
                 <div class="nav-links">
                     <a href="{{ route('home') }}" class="nav-link">Home</a>
                     <a href="{{ route('cart.view') }}" class="nav-link">
@@ -246,75 +244,49 @@
 
     <div class="container checkout-container">
         <h1 class="page-title">Checkout</h1>
-        
+
         <div class="row">
             <div class="col-lg-7">
                 <form action="{{ route('checkout.place') }}" method="POST" id="checkout-form">
                     @csrf
                     <div class="checkout-form">
                         <h3 class="section-title">Delivery Information</h3>
-                        
+
                         <div class="row mb-4">
                             <div class="col-md-12 mb-3">
                                 <label for="address" class="form-label">Delivery Address</label>
-                                <input type="text" name="address" id="address" class="form-control" placeholder="Enter your full address">
-                                <div class="invalid-feedback" id="address-error">Address is required.</div>
+                                <input type="text" name="address" id="address" class="form-control"
+                                    placeholder="Enter your full address" required>
+                                <div id="address-error" class="text-danger mt-1" style="display: none;">Please enter
+                                    your address</div>
                             </div>
-                            
+
                             <div class="col-md-12">
                                 <label for="phone" class="form-label">Contact Number</label>
-                                <input type="text" name="phone" id="phone" class="form-control" placeholder="Enter your phone number">
-                                <div class="invalid-feedback" id="phone-error">Phone number is required.</div>
+                                <input type="text" name="phone" id="phone" class="form-control"
+                                    placeholder="Enter your phone number" required>
+                                <div id="phone-error" class="text-danger mt-1" style="display: none;">Please enter your
+                                    phone number</div>
                             </div>
                         </div>
-                        
+
                         <h3 class="section-title">Payment Method</h3>
-                        
+
                         <div class="payment-methods">
                             <div class="payment-option">
                                 <input type="radio" name="payment_method" value="cod" id="cod" checked>
                                 <label for="cod">Cash on Delivery</label>
                             </div>
-                            
-                            <div class="payment-option">
-                                <input type="radio" name="payment_method" value="online" id="online">
-                                <label for="online">Online Payment</label>
-                            </div>
                         </div>
-                        
-                        <!-- Online Payment Options (Hidden Initially) -->
-                        <div id="online-payment-options" style="display: none;">
-                            <h4 class="mt-4 mb-3">Select Payment Service</h4>
-                            
-                            <div class="payment-services">
-                                <div class="payment-card" id="easypaisa-card" onclick="selectPaymentService('easypaisa')">
-                                    <div class="payment-card-title">Easypaisa</div>
-                                    <div class="payment-card-account">Account: 0345-1234567</div>
-                                </div>
-                                
-                                <div class="payment-card" id="jazzcash-card" onclick="selectPaymentService('jazzcash')">
-                                    <div class="payment-card-title">JazzCash</div>
-                                    <div class="payment-card-account">Account: 0300-7654321</div>
-                                </div>
-                            </div>
-                            
-                            <!-- Transaction ID Input (Initially Hidden) -->
-                            <div class="mt-4" id="transaction-id-input" style="display: none;">
-                                <label for="transaction_id" class="form-label">Transaction ID</label>
-                                <input type="text" name="transaction_id" id="transaction_id" class="form-control" placeholder="Enter your transaction ID">
-                                <div class="invalid-feedback" id="transaction-error">Transaction ID is required.</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- No need for service_id since we process all cart items -->
+
+                        <!-- No need for service_id since we process all cart items -->
                 </form>
             </div>
-            
+
             <div class="col-lg-5">
                 <div class="order-summary">
                     <h3 class="section-title">Order Summary</h3>
-                    
+
                     <div class="order-item">
                         @php $total = 0; @endphp
                         @foreach ($cart as $item)
@@ -325,12 +297,12 @@
                             @php $total += $item['quantity'] * $item['price']; @endphp
                         @endforeach
                     </div>
-                    
+
                     <div class="order-total">
                         <span class="total-label">Total</span>
                         <span class="total-value">{{ $total }} PKR</span>
                     </div>
-                    
+
                     <button type="submit" class="place-order-btn" form="checkout-form">
                         <i class="fas fa-check-circle me-2"></i> Place Order
                     </button>
@@ -343,7 +315,7 @@
     <footer>
         <div class="container">
             <div class="text-center">
-                <p>&copy; 2024 Laundrify. All rights reserved.</p>
+                <p>&copy; 2026 Tiffin Time. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -354,32 +326,25 @@
             e.preventDefault();
             const address = document.getElementById('address');
             const phone = document.getElementById('phone');
-            const transactionId = document.getElementById('transaction_id');
             const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
             let isValid = true;
 
             // Reset validation messages
-            document.getElementById('address-error').style.display = 'none';
-            document.getElementById('phone-error').style.display = 'none';
-            if (document.getElementById('transaction-error')) {
-                document.getElementById('transaction-error').style.display = 'none';
-            }
+            const addressError = document.getElementById('address-error');
+            const phoneError = document.getElementById('phone-error');
+
+            if (addressError) addressError.style.display = 'none';
+            if (phoneError) phoneError.style.display = 'none';
 
             // Validate address
             if (address.value.trim() === '') {
-                document.getElementById('address-error').style.display = 'block';
+                if (addressError) addressError.style.display = 'block';
                 isValid = false;
             }
 
             // Validate phone
             if (phone.value.trim() === '') {
-                document.getElementById('phone-error').style.display = 'block';
-                isValid = false;
-            }
-
-            // Validate transaction ID if online payment selected
-            if (paymentMethod === 'online' && transactionId.value.trim() === '') {
-                document.getElementById('transaction-error').style.display = 'block';
+                if (phoneError) phoneError.style.display = 'block';
                 isValid = false;
             }
 
@@ -389,27 +354,8 @@
         });
 
         // Toggle payment options visibility
-        document.getElementById('online').addEventListener('change', function () {
-            document.getElementById('online-payment-options').style.display = 'block';
-        });
 
-        document.getElementById('cod').addEventListener('change', function () {
-            document.getElementById('online-payment-options').style.display = 'none';
-            document.getElementById('transaction-id-input').style.display = 'none';
-            
-            // Reset payment service selections
-            const paymentCards = document.querySelectorAll('.payment-card');
-            paymentCards.forEach(card => card.classList.remove('active'));
-        });
-
-        // Handle payment service selection
-        function selectPaymentService(service) {
-            const paymentCards = document.querySelectorAll('.payment-card');
-            paymentCards.forEach(card => card.classList.remove('active'));
-            
-            document.getElementById(`${service}-card`).classList.add('active');
-            document.getElementById('transaction-id-input').style.display = 'block';
-        }
     </script>
 </body>
+
 </html>

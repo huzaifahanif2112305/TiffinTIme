@@ -1,7 +1,4 @@
-/**
- * Laundrify Admin Toast Notifications
- * Modern toast notification system
- */
+
 
 // Main Toast class
 class Toast {

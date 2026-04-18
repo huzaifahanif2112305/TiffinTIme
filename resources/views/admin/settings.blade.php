@@ -9,7 +9,7 @@
 <body>
     <div class="container mt-5">
         <h1>Settings</h1>
-        <p>Here we will manage the settings of the Laundrify platform in future or fyp2</p>
+        <p>Here we will manage the settings of the Tiffin Time platform in future or fyp2</p>
     </div>
 </body>
 </html>

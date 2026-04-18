@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Make the logo component available to all views
         View::composer('*', function ($view) {
-            $view->with('appName', 'Laundrify');
+            $view->with('appName', 'TiffinTime');
         });
     }
 }

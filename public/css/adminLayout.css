@@ -1,21 +1,21 @@
 /* 
- * Laundrify Admin Layout
+ * Tiffin Time Admin Layout
  * Modern and professional styling for admin dashboard
  */
 
 /* Variables */
 :root {
-    /* Colors */
-    --primary-color: #4e73df;
-    --primary-hover: #2e59d9;
-    --primary-light: #e8eafd;
-    --secondary-color: #858796;
-    --success-color: #1cc88a;
-    --info-color: #36b9cc;
-    --warning-color: #f6c23e;
-    --danger-color: #e74a3b;
-    --light-color: #f8f9fc;
-    --dark-color: #5a5c69;
+    /* Colors - TiffinTime Theme */
+    --primary-color: #EA580C;
+    --primary-hover: #C2410C;
+    --primary-light: #FFF7ED;
+    --secondary-color: #92400E;
+    --success-color: #16A34A;
+    --info-color: #EA580C;
+    --warning-color: #F59E0B;
+    --danger-color: #DC2626;
+    --light-color: #FFF7ED;
+    --dark-color: #7C2D12;
     --white-color: #fff;
     --gray-100: #f8f9fc;
     --gray-200: #eaecf4;
@@ -45,8 +45,8 @@
 
 /* General Styles */
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--gray-100);
+    font-family: 'Poppins', 'Inter', sans-serif;
+    background-color: #FFF7ED;
     color: var(--gray-800);
     overflow-x: hidden;
 }

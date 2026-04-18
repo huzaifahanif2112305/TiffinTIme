@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Update Profile - Laundrify</title>
+    <title>Update Profile - Tiffin Time</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -151,7 +151,7 @@
     <footer class="footer">
         <div class="container">
             <div class="text-center">
-                <p class="mb-0">&copy; {{ date('Y') }} Laundrify. All rights reserved.</p>
+                <p class="mb-0">&copy; {{ date('Y') }} Tiffin Time. All rights reserved.</p>
             </div>
         </div>
     </footer>

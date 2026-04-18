@@ -3,114 +3,99 @@
 namespace App\Http\Controllers;
 
 use App\Models\SellerVerification;
-use App\Models\Seller;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Carbon;
 
 class SellerVerificationController extends Controller
 {
     /**
-     * Create a new controller instance.
-     *
-     * @return void
+     * Show the verification application form or current status.
      */
-    public function __construct()
+    public function showForm()
     {
-        // Authentication middleware will be applied in routes file
+        $seller       = auth()->guard('seller')->user();
+        $verification = SellerVerification::where('seller_id', $seller->id)->first();
+
+        return view('seller.verification', compact('seller', 'verification'));
     }
-    
+
     /**
-     * Show the verification request form.
-     *
-     * @return \Illuminate\View\View
+     * Handle the verification form submission.
      */
-    public function showVerificationForm()
+    public function submit(Request $request)
     {
-        $seller = Auth::guard('seller')->user();
-        
-        // Check if the seller already has a verification request
-        $verificationRequest = SellerVerification::where('seller_id', $seller->id)->first();
-        
-        return view('seller.verification.apply', compact('seller', 'verificationRequest'));
-    }
-    
-    /**
-     * Submit a verification request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function submitVerificationRequest(Request $request)
-    {
+        $seller = auth()->guard('seller')->user();
+
+        // Prevent resubmission if a pending or approved request exists
+        $existing = SellerVerification::where('seller_id', $seller->id)->first();
+
+        if ($existing && in_array($existing->status, ['pending', 'approved'])) {
+            return redirect()->route('seller.verification.status')
+                ->with('info', 'You already have a ' . $existing->status . ' verification request.');
+        }
+
         $request->validate([
-            'business_description' => 'required|string|min:50',
-            'reason_for_verification' => 'required|string|min:50',
-            'documents.*' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // Max 5MB per document
-            'verification_agreement' => 'required',
+            'full_name'        => 'required|string|max:255',
+            'cnic_number'      => ['required', 'string', 'regex:/^\d{5}-\d{7}-\d{1}$/'],
+            'address'          => 'required|string|max:500',
+            'phone'            => 'required|string|max:20',
+            'cnic_front_image' => 'required|image|mimes:jpeg,png,jpg|max:3072',
+            'cnic_back_image'  => 'required|image|mimes:jpeg,png,jpg|max:3072',
+            'profile_picture'  => 'required|image|mimes:jpeg,png,jpg|max:3072',
+        ], [
+            'cnic_number.regex'  => 'CNIC must be in the format: 12345-1234567-1',
+            'cnic_front_image.max' => 'Each image must be less than 3MB.',
+            'cnic_back_image.max'  => 'Each image must be less than 3MB.',
+            'profile_picture.max'  => 'Profile picture must be less than 3MB.',
         ]);
-        
-        $seller = Auth::guard('seller')->user();
-        
-        // Check if seller already has a pending or approved verification
-        $existingVerification = SellerVerification::where('seller_id', $seller->id)
-            ->whereIn('status', ['pending', 'approved'])
-            ->first();
-            
-        if ($existingVerification) {
-            return back()->with('error', 'You already have a ' . $existingVerification->status . ' verification request.');
-        }
-        
-        // Handle document uploads
-        $documentPaths = [];
-        if ($request->hasFile('documents')) {
-            foreach ($request->file('documents') as $document) {
-                $path = $document->store('verification_documents/' . $seller->id, 'public');
-                $documentPaths[] = $path;
-            }
-        }
-        
-        // Create or update verification request
-        $verificationData = [
-            'seller_id' => $seller->id,
-            'status' => 'pending',
-            'documents' => $documentPaths,
-            'business_description' => $request->business_description,
-            'reason_for_verification' => $request->reason_for_verification,
-            'submitted_at' => now(),
-        ];
-        
-        $existingRequest = SellerVerification::where('seller_id', $seller->id)->first();
-        
-        if ($existingRequest) {
-            $existingRequest->update($verificationData);
+
+        // Store images securely
+        $frontPath   = $request->file('cnic_front_image')->store('verifications/cnic', 'public');
+        $backPath    = $request->file('cnic_back_image')->store('verifications/cnic', 'public');
+        $picturePath = $request->file('profile_picture')->store('verifications/profile', 'public');
+
+        if ($existing) {
+            // Resubmit after rejection: delete old images, update record
+            Storage::disk('public')->delete([$existing->cnic_front_image, $existing->cnic_back_image, $existing->profile_picture]);
+            $existing->update([
+                'full_name'        => $request->full_name,
+                'cnic_number'      => $request->cnic_number,
+                'address'          => $request->address,
+                'phone'            => $request->phone,
+                'cnic_front_image' => $frontPath,
+                'cnic_back_image'  => $backPath,
+                'profile_picture'  => $picturePath,
+                'status'           => 'pending',
+                'admin_notes'      => null,
+                'reviewed_at'      => null,
+            ]);
         } else {
-            SellerVerification::create($verificationData);
+            SellerVerification::create([
+                'seller_id'        => $seller->id,
+                'full_name'        => $request->full_name,
+                'cnic_number'      => $request->cnic_number,
+                'address'          => $request->address,
+                'phone'            => $request->phone,
+                'cnic_front_image' => $frontPath,
+                'cnic_back_image'  => $backPath,
+                'profile_picture'  => $picturePath,
+                'status'           => 'pending',
+            ]);
         }
-        
-        // Notify admin about the verification request (you can implement this later)
-        
+
         return redirect()->route('seller.verification.status')
-            ->with('success', 'Your verification request has been submitted successfully. We will review your request shortly.');
+            ->with('success', 'Your verification request has been submitted successfully!');
     }
-    
+
     /**
-     * Show the verification status.
-     *
-     * @return \Illuminate\View\View
+     * Show current verification status to seller.
      */
-    public function showVerificationStatus()
+    public function status()
     {
-        $seller = Auth::guard('seller')->user();
-        $verificationRequest = SellerVerification::where('seller_id', $seller->id)->first();
-        
-        if (!$verificationRequest) {
-            return redirect()->route('seller.verification.apply')
-                ->with('info', 'You have not submitted a verification request yet.');
-        }
-        
-        return view('seller.verification.status', compact('seller', 'verificationRequest'));
+        $seller       = auth()->guard('seller')->user();
+        $verification = SellerVerification::where('seller_id', $seller->id)->first();
+
+        return view('seller.verification-status', compact('seller', 'verification'));
     }
 }

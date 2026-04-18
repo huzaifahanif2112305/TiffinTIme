@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Order Details - {{ $order->id }} | Laundrify</title>
+    <title>Order Details - {{ $order->id }} | Tiffin Time</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Bootstrap CSS -->
@@ -19,6 +21,7 @@
     <link rel="stylesheet" href="{{ asset('css/logo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/orderDetails.css') }}">
 </head>
+
 <body>
     <header class="bg-white shadow-sm py-3">
         <div class="container">
@@ -39,7 +42,6 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('order.history') }}">Order History</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Order #{{ $order->id }}</li>
                     </ol>
                 </nav>
@@ -52,7 +54,8 @@
                 <div class="order-card card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Order #{{ $order->id }}</h5>
-                        <span class="order-status status-{{ strtolower(str_replace(' ', '-', str_replace('_', '-', $order->status))) }}">
+                        <span
+                            class="order-status status-{{ strtolower(str_replace(' ', '-', str_replace('_', '-', $order->status))) }}">
                             <i class="bi bi-circle-fill me-1" style="font-size: 8px;"></i>
                             {{ ucwords(str_replace('_', ' ', $order->status)) }}
                         </span>
@@ -90,12 +93,12 @@
                                 </div>
                             </div>
                             @if($order->transaction_id)
-                            <div class="col-md-6">
-                                <div class="info-group">
-                                    <div class="info-label">Transaction ID</div>
-                                    <div class="info-value">{{ $order->transaction_id }}</div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">Transaction ID</div>
+                                        <div class="info-value">{{ $order->transaction_id }}</div>
+                                    </div>
                                 </div>
-                            </div>
                             @endif
                         </div>
                     </div>
@@ -119,15 +122,18 @@
                                 </thead>
                                 <tbody>
                                     @foreach($order->items as $item)
-                                    <tr>
-                                        <td>
-                                            <div class="fw-medium">{{ $item->service->name ?? $item->service->title ?? 'Unknown Service' }}</div>
-                                            <small class="text-muted">{{ $item->service->category ?? '' }}</small>
-                                        </td>
-                                        <td class="text-center">${{ number_format($item->price, 2) }}</td>
-                                        <td class="text-center">{{ $item->quantity }}</td>
-                                        <td class="text-end fw-semibold">${{ number_format($item->price * $item->quantity, 2) }}</td>
-                                    </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="fw-medium">
+                                                    {{ $item->service->name ?? $item->service->title ?? 'Unknown Service' }}
+                                                </div>
+                                                <small class="text-muted">{{ $item->service->category ?? '' }}</small>
+                                            </td>
+                                            <td class="text-center">${{ number_format($item->price, 2) }}</td>
+                                            <td class="text-center">{{ $item->quantity }}</td>
+                                            <td class="text-end fw-semibold">
+                                                ${{ number_format($item->price * $item->quantity, 2) }}</td>
+                                        </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
@@ -141,19 +147,7 @@
                     </div>
                 </div>
 
-                @if($order->status === 'completed')
-                <div class="order-card card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Leave Feedback</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="text-muted mb-3">Share your experience with this service to help other customers make better decisions.</p>
-                        <a href="{{ route('order.feedback', $order->id) }}" class="action-btn btn-feedback">
-                            <i class="fas fa-comment"></i> Write a Review
-                        </a>
-                    </div>
-                </div>
-                @endif
+
             </div>
 
             <div class="col-lg-4">
@@ -164,12 +158,14 @@
                     </div>
                     <div class="card-body">
                         <div class="timeline">
-                            <div class="timeline-item {{ in_array($order->status, ['pending', 'accepted', 'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']) ? 'active' : '' }}">
+                            <div
+                                class="timeline-item {{ in_array($order->status, ['pending', 'accepted', 'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']) ? 'active' : '' }}">
                                 <div class="timeline-title">Order Placed</div>
                                 <div class="timeline-date">{{ $order->created_at->format('M d, Y h:i A') }}</div>
                             </div>
-                            
-                            <div class="timeline-item {{ in_array($order->status, ['accepted', 'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']) ? 'active' : '' }}">
+
+                            <div
+                                class="timeline-item {{ in_array($order->status, ['accepted', 'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']) ? 'active' : '' }}">
                                 <div class="timeline-title">Order Accepted</div>
                                 <div class="timeline-date">
                                     @if(in_array($order->status, ['accepted', 'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']))
@@ -179,8 +175,9 @@
                                     @endif
                                 </div>
                             </div>
-                            
-                            <div class="timeline-item {{ in_array($order->status, ['pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']) ? 'active' : '' }}">
+
+                            <div
+                                class="timeline-item {{ in_array($order->status, ['pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']) ? 'active' : '' }}">
                                 <div class="timeline-title">In Process</div>
                                 <div class="timeline-date">
                                     @if(in_array($order->status, ['pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']))
@@ -190,8 +187,9 @@
                                     @endif
                                 </div>
                             </div>
-                            
-                            <div class="timeline-item {{ in_array($order->status, ['delivered', 'completed']) ? 'active' : '' }}">
+
+                            <div
+                                class="timeline-item {{ in_array($order->status, ['delivered', 'completed']) ? 'active' : '' }}">
                                 <div class="timeline-title">Delivered</div>
                                 <div class="timeline-date">
                                     @if(in_array($order->status, ['delivered', 'completed']))
@@ -201,7 +199,7 @@
                                     @endif
                                 </div>
                             </div>
-                            
+
                             <div class="timeline-item {{ $order->status === 'completed' ? 'active' : '' }}">
                                 <div class="timeline-title">Completed</div>
                                 <div class="timeline-date">
@@ -226,12 +224,8 @@
                             <a href="{{ route('order.track', $order->id) }}" class="action-btn btn-track">
                                 <i class="fas fa-truck"></i> Track Order
                             </a>
-                            
-                            @if($order->status !== 'cancelled' && $order->status !== 'completed' && $order->status !== 'rejected')
-                            <a href="{{ route('chat.index', $order->id) }}" class="action-btn btn-contact">
-                                <i class="fas fa-comments"></i> Contact Seller
-                            </a>
-                            @endif
+
+
                         </div>
                     </div>
                 </div>
@@ -243,7 +237,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <p class="mb-0 text-muted">&copy; {{ date('Y') }} Laundrify. All rights reserved.</p>
+                    <p class="mb-0 text-muted">&copy; {{ date('Y') }} Tiffin Time. All rights reserved.</p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <a href="#" class="text-muted me-3">Privacy Policy</a>
@@ -256,4 +250,5 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> 
+
+</html>

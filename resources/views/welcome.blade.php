@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Home Page</title>
     <style>
-        body, html {
+        body,
+        html {
             height: 100%;
             margin: 0;
             font-family: Arial, sans-serif;
             background-image: url('../images/home-background.jpg') !important;
-            background-size: cover;          
-            background-repeat: no-repeat;     
-            background-position: center;       
-            background-attachment: fixed; 
-            background-blend-mode: overlay;   
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            background-blend-mode: overlay;
         }
+
         .container {
             height: 100%;
             display: flex;
@@ -58,12 +61,15 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="button-container">
             <a href="{{ route('home') }}" class="button">Buyer</a>
-            <a href="{{ Auth::guard('seller')->check() ? route('seller.panel') : route('login.seller') }}" class="button seller">Seller</a>
-            </div>
+            <a href="{{ Auth::guard('seller')->check() ? route('seller.panel') : route('login.seller') }}"
+                class="button seller">Seller</a>
+        </div>
     </div>
 </body>
+
 </html>

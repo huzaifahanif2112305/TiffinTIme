@@ -17,7 +17,7 @@ class ServiceSeeder extends Seeder
             ->where('accountIsApproved', 1)
             ->pluck('id');
 
-        // Unsplash laundry related images
+       
         $images = [
             'https://images.unsplash.com/photo-1545173168-9f1947eebb7f',
             'https://images.unsplash.com/photo-1517677208171-0bc6725a3e60',

@@ -6,16 +6,18 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
-# Laundrify
+# DesiDhaba
 
-Laundrify is a centralized web application designed to connect laundry service providers with customers in urban areas. The platform enables customers to easily access laundry services, while allowing sellers (laundry service providers) to manage and promote their services.
+DesiDhaba is a Smart Tiffin Service System - a centralized web application designed to connect customers with local tiffin service providers offering home-cooked meals. The platform simplifies daily meal management for students, office workers, and families by offering affordable, hygienic, and customizable tiffin plans.
 
 ## Features
 
-- **Seller Panel**: Allows laundry service providers to register, log in, add services, and manage their offerings.
-- **Buyer Interface**: Customers can browse available services, view pricing, and avail of services with ease.
-- **Service Management**: Sellers can add new services with details such as pricing, description, and images.
-- **Authentication**: Secure user authentication for both buyers and sellers with separate login and registration forms.
+- **Seller Panel**: Allows tiffin service providers (home-based chefs) to register, log in, upload daily menus with prices, and manage their offerings.
+- **Buyer Interface**: Customers can browse available tiffin providers, compare menus and prices, place orders, and manage subscriptions with ease.
+- **Menu Management**: Sellers can add and update daily menus with details such as dishes, pricing, descriptions, and images.
+- **Order Management**: Track order status from placement to delivery with real-time updates.
+- **Authentication**: Secure user authentication for customers, tiffin providers, and administrators with separate login and registration forms.
+- **Rating & Reviews**: Customers can rate and review tiffin providers and dishes.
 - **Responsive Design**: Fully responsive UI for an optimal experience across all devices.
 
 ## Tech Stack
@@ -33,11 +35,11 @@ To get started with the project locally:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/laundrify.git
+   git clone https://github.com/yourusername/DesiDhaba.git
    
-2. Navidate the Project Directory
+2. Navigate the Project Directory
    ```bash
-   cd laundrify
+   cd DesiDhaba
 3. Install require Dependensies
    ```bash
    composer install
@@ -54,13 +56,22 @@ To get started with the project locally:
 Now you should be able to access the application at http://localhost:8000.
 
 Usage
-Seller:
+Seller (Tiffin Provider):
 
-Register and log in to the seller panel.
-Add new services (including images and descriptions).
-View and manage existing services.
-Buyer:
+- Register and log in to the seller panel
+- Upload daily menus with dishes, prices, and images
+- View and manage orders from customers
+- Track customer ratings and feedback
 
-Browse available laundry services.
-View detailed information about each service.
-Avail of services based on pricing and location.
+Buyer (Customer):
+
+- Browse available tiffin service providers
+- View detailed information about menus and dishes
+- Place orders and manage subscriptions
+- Rate and review tiffin providers and meals
+
+Admin:
+
+- Manage all users (customers and sellers)
+- Approve or reject seller registrations
+- Monitor all orders and handle complaints

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Registration - Laundrify</title>
+    <title>Seller Registration - TIffin Time</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/styleHome.css') }}">
@@ -184,8 +184,8 @@
             <div class="header-content">
                 <div class="logo">
                     <a href="{{ route('home') }}">
-                        <span class="logo-text">Laundrify</span>
-                        <span class="logo-icon"><i class="fas fa-tshirt"></i></span>
+                        <span class="logo-text">Tiffin Time</span>
+                        <span class="logo-icon"><i class="fas fa-utensils"></i></span>
                     </a>
                 </div>
                 
@@ -231,25 +231,21 @@
                         <div class="mb-3">
                             <label for="name" class="form-label">Full Name</label>
                             <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
-                            <div id="nameError" class="invalid-feedback"></div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
                             <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
-                            <div id="emailError" class="invalid-feedback"></div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" name="password" required>
-                            <div id="passwordError" class="invalid-feedback"></div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="password_confirmation" class="form-label">Confirm Password</label>
                             <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
-                            <div id="confirmPasswordError" class="invalid-feedback"></div>
                         </div>
                     </div>
                     
@@ -258,20 +254,17 @@
                             <label for="profile_image" class="form-label">Profile Image</label>
                             <input type="file" class="form-control" id="profile_image" name="profile_image" accept="image/*" required>
                             <div class="form-text">Upload a professional profile image (JPG, PNG)</div>
-                            <div id="imageError" class="invalid-feedback"></div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="city" class="form-label">City</label>
                             <input type="text" class="form-control" id="city" name="city" value="{{ old('city') }}" required>
-                            <div id="cityError" class="invalid-feedback"></div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="area" class="form-label">Service Area</label>
                             <input type="text" class="form-control" id="area" name="area" value="{{ old('area') }}" required>
                             <div class="form-text">The specific area within the city where you provide service</div>
-                            <div id="areaError" class="invalid-feedback"></div>
                         </div>
                     </div>
                 </div>
@@ -282,7 +275,6 @@
                         <label class="form-check-label" for="terms">
                             I agree to the terms and conditions for sellers
                         </label>
-                        <div id="termsError" class="invalid-feedback"></div>
                     </div>
                 </div>
 
@@ -300,7 +292,7 @@
     <footer>
         <div class="container">
             <div class="text-center">
-                <p>&copy; 2024 Laundrify. All rights reserved.</p>
+                <p>&copy; 2026 Tiffin Time. All rights reserved.</p>
             </div>
         </div>
     </footer>

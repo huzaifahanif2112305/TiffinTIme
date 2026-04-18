@@ -57,7 +57,7 @@
             </a>
         </p>
         <div class="footer">
-            <p>Thank you for using Laundrify!</p>
+            <p>Thank you for using TiffinTime!</p>
         </div>
     </div>
 </body>

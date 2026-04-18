@@ -1,14 +1,14 @@
-/* Enhanced Logo Styling for Laundrify */
+/* Enhanced Logo Styling for Tiffin Time */
 :root {
-  --logo-primary: #4361ee;
-  --logo-secondary: #3a56d4;
-  --logo-accent: #ff5e7d;
-  --logo-gradient: linear-gradient(135deg, #4361ee, #3a56d4);
-  --logo-gradient-hover: linear-gradient(135deg, #3a56d4, #4361ee);
-  --logo-shadow: 0 5px 15px rgba(67, 97, 238, 0.25);
-  --logo-shadow-hover: 0 8px 25px rgba(67, 97, 238, 0.35);
-  --logo-text-color: #2d3748;
-  --logo-text-light: #718096;
+  --logo-primary: #EA580C;
+  --logo-secondary: #C2410C;
+  --logo-accent: #F59E0B;
+  --logo-gradient: linear-gradient(135deg, #EA580C, #C2410C);
+  --logo-gradient-hover: linear-gradient(135deg, #C2410C, #EA580C);
+  --logo-shadow: 0 5px 15px rgba(234, 88, 12, 0.3);
+  --logo-shadow-hover: 0 8px 25px rgba(234, 88, 12, 0.4);
+  --logo-text-color: #7C2D12;
+  --logo-text-light: #92400E;
 }
 
 /* Base Logo Container */
@@ -77,7 +77,6 @@
   background: var(--logo-gradient-hover);
 }
 
-/* Washing machine animation for laundry logo */
 .washer {
   width: 32px;
   height: 32px;

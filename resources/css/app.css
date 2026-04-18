@@ -2,11 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TIffin Time Theme */
 *{
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', 'Inter', sans-serif;
 }
+
 h1{
-    color: gold !important;
+    color: #EA580C !important;
     font-size: 22px;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+}
+
+/* DesiDhaba Primary Colors */
+.btn-primary {
+    background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%) !important;
+    border-color: #EA580C !important;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #C2410C 0%, #9A3412 100%) !important;
+    border-color: #C2410C !important;
+}
+
+.text-primary {
+    color: #EA580C !important;
+}
+
+.bg-primary {
+    background-color: #EA580C !important;
 }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Models\Seller;
-use App\Models\Feedback;
 
 
 class ServiceController extends Controller
@@ -26,13 +25,8 @@ class ServiceController extends Controller
         $seller = Seller::findOrFail($seller_id);
         $services = Service::where('seller_id', $seller_id)->get();
         
-        // Get feedback for this seller
-        $feedbacks = Feedback::where('seller_id', $seller_id)
-                      ->with(['user', 'seller', 'order'])
-                      ->whereHas('user')
-                      ->get();
         
-        return view('seller-services', compact('seller', 'services', 'feedbacks'));
+        return view('seller-services', compact('seller', 'services'));
     }
 
 public function searchServices(Request $request)

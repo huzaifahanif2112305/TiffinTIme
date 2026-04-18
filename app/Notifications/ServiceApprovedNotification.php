@@ -45,10 +45,10 @@ class ServiceApprovedNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Service Approved')
-            ->line("Congratulations! Your service '{$this->serviceName}' has been approved.")
-            ->line("Your service is now available for customers to view and order.")
-            ->action('View Your Services', url('/seller/panel'));
+            ->subject('Menu Approved')
+            ->line("Congratulations! Your Menu '{$this->serviceName}' has been approved.")
+            ->line("Your Menu is now available for customers to view and order.")
+            ->action('View Your Menu', url('/seller/panel'));
     }
 
     /**
@@ -62,7 +62,7 @@ class ServiceApprovedNotification extends Notification
         return [
             'service_id' => $this->serviceId,
             'service_name' => $this->serviceName,
-            'message' => "Your service '{$this->serviceName}' has been approved.",
+            'message' => "Your Menu '{$this->serviceName}' has been approved.",
             'type' => 'service_approved'
         ];
     }

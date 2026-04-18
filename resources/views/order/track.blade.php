@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Order Tracking - Laundrify</title>
+    <title>Order Tracking - Tiffin Time</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
@@ -24,6 +25,7 @@
             margin-bottom: 20px;
             position: relative;
         }
+
         .status-tracker::before {
             content: '';
             position: absolute;
@@ -34,6 +36,7 @@
             background-color: #dee2e6;
             z-index: 1;
         }
+
         .status-item {
             display: flex;
             flex-direction: column;
@@ -42,6 +45,7 @@
             flex-grow: 1;
             z-index: 2;
         }
+
         .status-icon {
             width: 40px;
             height: 40px;
@@ -54,16 +58,19 @@
             color: #6c757d;
             transition: all 0.3s ease;
         }
+
         .status-icon.completed {
             background-color: #28a745;
             color: white;
         }
+
         .status-text {
             text-align: center;
             font-size: 0.8rem;
         }
     </style>
 </head>
+
 <body>
     <header class="bg-white shadow-sm py-3">
         <div class="container">
@@ -93,11 +100,25 @@
                             </div>
                         @elseif($order->status == 'rejected')
                             <div class="alert alert-danger animate__animated animate__fadeIn">
-                                <i class="bi bi-x-circle me-2"></i> Your order was rejected. Please contact customer service for more information.
+                                <i class="bi bi-x-circle me-2"></i> Your order was rejected. Please contact customer service
+                                for more information.
                             </div>
                         @elseif($order->status == 'cancelled')
                             <div class="alert alert-danger animate__animated animate__fadeIn">
-                                <i class="bi bi-slash-circle me-2"></i> Your order was cancelled. Please contact customer service for more information.
+                                <i class="bi bi-slash-circle me-2"></i> Your order was cancelled. Please contact customer
+                                service for more information.
+                            </div>
+                        @elseif($order->status == 'cooking')
+                            <div class="alert alert-info animate__animated animate__fadeIn">
+                                <i class="bi bi-fire me-2"></i> Your food is being prepared.
+                            </div>
+                        @elseif($order->status == 'packed')
+                            <div class="alert alert-info animate__animated animate__fadeIn">
+                                <i class="bi bi-box-seam me-2"></i> Your food is being packed.
+                            </div>
+                        @elseif($order->status == 'out_for_delivery')
+                            <div class="alert alert-info animate__animated animate__fadeIn">
+                                <i class="bi bi-bicycle me-2"></i> Your order is out for delivery.
                             </div>
                         @elseif($order->status == 'delivered')
                             <div class="alert alert-success animate__animated animate__fadeIn">
@@ -109,22 +130,21 @@
                             </div>
                         @else
                             <div class="alert alert-info animate__animated animate__fadeIn">
-                                <i class="bi bi-info-circle me-2"></i> Your order is being processed. You can track its progress below.
+                                <i class="bi bi-info-circle me-2"></i> Your order is being processed. You can track its
+                                progress below.
                             </div>
                         @endif
-                        
+
                         <!-- Status Tracker -->
                         <div class="status-tracker">
                             @php
                                 $statuses = [
                                     'pending' => 'bi-hourglass-split',
                                     'accepted' => 'bi-check-circle',
-                                    'pickup_departed' => 'bi-truck',
-                                    'picked_up' => 'bi-basket',
-                                    'started_washing' => 'bi-water',
-                                    'ironing' => 'bi-crop',
-                                    'ready_for_delivery' => 'bi-box-seam',
-                                    'delivered' => 'bi-truck',
+                                    'cooking' => 'bi-fire',
+                                    'packed' => 'bi-box-seam',
+                                    'out_for_delivery' => 'bi-bicycle',
+                                    'delivered' => 'bi-house-door',
                                     'completed' => 'bi-check-circle-fill',
                                     'rejected' => 'bi-x-circle',
                                     'cancelled' => 'bi-slash-circle'
@@ -178,11 +198,11 @@
                                 @endforeach
                             @endif
                         </div>
-                        
+
                         <!-- Order Details -->
                         <div class="order-details">
                             <h3 class="section-title">Order Details</h3>
-                            
+
                             <div class="order-meta">
                                 <div class="order-meta-item">
                                     <i class="fas fa-hashtag"></i>
@@ -191,7 +211,7 @@
                                         <div class="meta-value">{{ $order->id }}</div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="order-meta-item">
                                     <i class="fas fa-calendar"></i>
                                     <div>
@@ -199,7 +219,7 @@
                                         <div class="meta-value">{{ $order->created_at->format('M d, Y') }}</div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="order-meta-item">
                                     <i class="fas fa-money-bill-wave"></i>
                                     <div>
@@ -207,7 +227,7 @@
                                         <div class="meta-value">${{ number_format($order->total_amount, 2) }}</div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="order-meta-item">
                                     <i class="fas fa-info-circle"></i>
                                     <div>
@@ -217,16 +237,12 @@
                                                 <span class="status-badge status-pending">Pending</span>
                                             @elseif($order->status == 'accepted')
                                                 <span class="status-badge status-accepted">Accepted</span>
-                                            @elseif($order->status == 'pickup_departed')
-                                                <span class="status-badge status-pickup">Pickup Departed</span>
-                                            @elseif($order->status == 'picked_up')
-                                                <span class="status-badge status-pickup">Picked Up</span>
-                                            @elseif($order->status == 'started_washing')
-                                                <span class="status-badge status-washing">Started Washing</span>
-                                            @elseif($order->status == 'ironing')
-                                                <span class="status-badge status-ironing">Ironing</span>
-                                            @elseif($order->status == 'ready_for_delivery')
-                                                <span class="status-badge status-ready">Ready for Delivery</span>
+                                            @elseif($order->status == 'cooking')
+                                                <span class="status-badge status-washing">Cooking</span>
+                                            @elseif($order->status == 'packed')
+                                                <span class="status-badge status-ironing">Packed</span>
+                                            @elseif($order->status == 'out_for_delivery')
+                                                <span class="status-badge status-ready">Out for Delivery</span>
                                             @elseif($order->status == 'delivered')
                                                 <span class="status-badge status-delivered">Delivered</span>
                                             @elseif($order->status == 'completed')
@@ -236,36 +252,31 @@
                                             @elseif($order->status == 'cancelled')
                                                 <span class="status-badge status-cancelled">Cancelled</span>
                                             @else
-                                                <span class="status-badge">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
+                                                <span
+                                                    class="status-badge">{{ ucwords(str_replace('_', ' ', $order->status)) }}</span>
                                             @endif
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Order Items -->
                         <div class="mt-5">
                             <h3 class="section-title">Order Items</h3>
-                            
+
                             <div class="order-items">
                                 @foreach($order->items as $item)
-                                <div class="item-card">
-                                    <div class="item-name">{{ $item->service->name }}</div>
-                                    <span class="item-qty">{{ $item->quantity }} x {{ $item->item_type }}</span>
-                                    <span class="item-price">${{ number_format($item->price, 2) }}</span>
-                                </div>
+                                    <div class="item-card">
+                                        <div class="item-name">{{ $item->service->name }}</div>
+                                        <span class="item-qty">{{ $item->quantity }} x {{ $item->item_type }}</span>
+                                        <span class="item-price">${{ number_format($item->price, 2) }}</span>
+                                    </div>
                                 @endforeach
                             </div>
                         </div>
-                        
-                        @if(in_array($order->status, ['accepted', 'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']))
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <a href="{{ route('chat.index', $order->id) }}" class="btn-contact">
-                                <i class="fas fa-comment-dots"></i> Chat with Seller
-                            </a>
-                        </div>
-                        @endif
+
+
                     </div>
                 </div>
             </div>
@@ -276,7 +287,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <p class="mb-0 text-muted">&copy; {{ date('Y') }} Laundrify. All rights reserved.</p>
+                    <p class="mb-0 text-muted">&copy; {{ date('Y') }} Tiffin Time. All rights reserved.</p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <a href="#" class="text-muted me-3">Privacy Policy</a>
@@ -289,4 +300,5 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

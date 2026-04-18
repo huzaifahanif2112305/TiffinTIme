@@ -66,4 +66,9 @@ class User extends Authenticatable
             return $this->morphMany(\Illuminate\Notifications\DatabaseNotification::class, 'notifiable');
         }
 
+        public function favourites()
+        {
+            return $this->belongsToMany(Service::class, 'favourites');
+        }
+
 }

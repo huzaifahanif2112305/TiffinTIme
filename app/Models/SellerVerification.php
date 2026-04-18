@@ -2,54 +2,48 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class SellerVerification extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'seller_id',
+        'full_name',
+        'cnic_number',
+        'address',
+        'phone',
+        'cnic_front_image',
+        'cnic_back_image',
+        'profile_picture',
         'status',
-        'documents',
-        'business_description',
-        'reason_for_verification',
-        'rejection_reason',
-        'reviewed_by',
-        'submitted_at',
+        'admin_notes',
         'reviewed_at',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
     protected $casts = [
-        'documents' => 'array',
-        'submitted_at' => 'datetime',
         'reviewed_at' => 'datetime',
     ];
 
-    /**
-     * Get the seller that owns the verification request.
-     */
     public function seller()
     {
         return $this->belongsTo(Seller::class);
     }
 
-    /**
-     * Get the admin who reviewed the verification request.
-     */
-    public function reviewer()
+    public function isPending(): bool
     {
-        return $this->belongsTo(User::class, 'reviewed_by');
+        return $this->status === 'pending';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === 'approved';
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === 'rejected';
     }
 }

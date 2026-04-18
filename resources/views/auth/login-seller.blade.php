@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Login - Laundrify</title>
+    <title>Seller Login - Tiffin Time</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/styleHome.css') }}">
@@ -149,8 +149,8 @@
             <div class="header-content">
                 <div class="logo">
                     <a href="{{ route('home') }}">
-                        <span class="logo-text">Laundrify</span>
-                        <span class="logo-icon"><i class="fas fa-tshirt"></i></span>
+                        <span class="logo-text">Tiffin Time</span>
+                        <span class="logo-icon"><i class="fas fa-utensils"></i></span>
                     </a>
                 </div>
                 
@@ -218,7 +218,7 @@
     <footer>
         <div class="container">
             <div class="text-center">
-                <p>&copy; 2024 Laundrify. All rights reserved.</p>
+                <p>&copy; 2026 TIffin Time. All rights reserved.</p>
             </div>
         </div>
     </footer>

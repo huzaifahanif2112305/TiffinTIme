@@ -106,7 +106,7 @@
 </head>
 <body>
     <header>
-        Welcome to Laundrify
+        Welcome to Tiffin Time
     </header>
 
     <div class="verify-otp-container">
@@ -123,7 +123,7 @@
     </div>
 
     <footer>
-        &copy; 2025 Laundrify. All Rights Reserved.
+        &copy; 2025 Tiffin Time. All Rights Reserved.
     </footer>
 </body>
 </html>

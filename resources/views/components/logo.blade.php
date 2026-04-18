@@ -1,10 +1,10 @@
 {{-- Logo Component --}}
 <div class="logo-container">
     <div class="logo-icon">
-        <i class="fas fa-tshirt"></i>
+        <i class="fas fa-utensils"></i>
     </div>
     <div class="logo-text">
-        <span class="highlight">Laundrify</span>
-        <span class="tagline">Clean & Fresh</span>
+        <span class="highlight">Tiffin Time</span>
+        <span class="tagline">Home Cooked Meals</span>
     </div>
 </div> 

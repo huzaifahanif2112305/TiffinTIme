@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             'id' => 1,
             'sellerType' => 1,
             'name' => 'Admin User',
-            'email' => 'admin@laundrify.com',
+            'email' => 'admin@tiffintime.com',
             'email_verified_at' => now(),
             'password' => Hash::make('admin123'),
             'mobile' => $faker->phoneNumber,

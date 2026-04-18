@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Seller;
+use App\Models\SellerVerification;
 use Illuminate\Http\Request;
 use App\Models\Service;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,7 @@ public function approveService($id)
         ));
         
         // Save a session message that will be displayed next time the seller logs in
-        session()->flash('service_approved', "Your service '{$service->service_name}' has been approved.");
+        session()->flash('service_approved', "Your Menu '{$service->service_name}' has been approved.");
     }
 
     return redirect()->route('admin.dashboard')->with('status', 'Service approved successfully.');
@@ -64,9 +65,63 @@ public function rejectService($id)
     $pendingSellers = Seller::where('accountIsApproved', 0)->where('is_deleted', 0)->get();
     $pendingServices = Service::where('is_approved', 0)->get();
     $sellers = Seller::where('accountIsApproved', 1)->where('is_deleted', 0)->get();
+    $pendingVerifications = SellerVerification::where('status', 'pending')->count();
 
-    return view('admin.dashboard', compact('pendingSellers', 'pendingServices', 'sellers'));
+    return view('admin.dashboard', compact('pendingSellers', 'pendingServices', 'sellers', 'pendingVerifications'));
 }
+
+    // ===== SELLER VERIFICATION ADMIN METHODS =====
+
+    public function verificationRequests()
+    {
+        $verifications = SellerVerification::with('seller')
+            ->orderByRaw("FIELD(status, 'pending', 'rejected', 'approved')")
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.verifications', compact('verifications'));
+    }
+
+    public function approveVerification($id)
+    {
+        $verification = SellerVerification::with('seller')->findOrFail($id);
+
+        $verification->update([
+            'status'      => 'approved',
+            'reviewed_at' => now(),
+        ]);
+
+        // Notify the seller
+        if ($verification->seller) {
+            $verification->seller->notify(
+                new \App\Notifications\VerificationStatusNotification('approved')
+            );
+        }
+
+        return redirect()->route('admin.verifications')
+            ->with('success', 'Seller "' . $verification->seller->name . '" has been verified!');
+    }
+
+    public function rejectVerification(Request $request, $id)
+    {
+        $verification = SellerVerification::with('seller')->findOrFail($id);
+
+        $verification->update([
+            'status'      => 'rejected',
+            'admin_notes' => $request->input('admin_notes'),
+            'reviewed_at' => now(),
+        ]);
+
+        // Notify the seller
+        if ($verification->seller) {
+            $verification->seller->notify(
+                new \App\Notifications\VerificationStatusNotification('rejected', $request->input('admin_notes'))
+            );
+        }
+
+        return redirect()->route('admin.verifications')
+            ->with('success', 'Verification request rejected.');
+    }
 public function manageSellers()
     {
         $sellers = Seller::paginate(10);

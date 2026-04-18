@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use App\Notifications\NewOrderNotification;
-use App\Models\Feedback;
+
 
 use App\Models\User;
 
@@ -19,60 +19,20 @@ use App\Models\User;
 class OrderController extends Controller
 {
 
-    public function feedback($id) {
-        $order = Order::findOrFail($id);
-        return view('order.feedbacks', compact('order'));
-    }
-    
-    public function submitFeedback(Request $request, $orderId)
-    {
-        $request->validate([
-            'feedback' => 'required|string|max:1000',
-        ]);
-    
-        $order = Order::findOrFail($orderId);
-    
-        Feedback::create([
-            'order_id' => $orderId,
-            'user_id' => auth()->id(), // Get the logged-in user
-            'seller_id' => $order->seller_id, // This should be the seller ID from the order
-            'feedback' => $request->feedback,
-        ]);
-    
-        return redirect()->route('order.history')->with('success', 'Feedback submitted successfully!');
-    }
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
     public function show($id)
     {
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
         $order->load(['seller', 'items.service']);
         return view('orders.show', compact('order'));
     }
-    public function history()
-    {
-        $orders = Order::where('user_id', Auth::id())
-                        ->where('status', 'completed')
-                        ->orderBy('created_at', 'desc')
-                        ->get();
-        
-        // If no completed orders are found, check for delivered orders too (which should be considered complete)
-        if ($orders->isEmpty()) {
-            $orders = Order::where('user_id', Auth::id())
-                          ->where(function($query) {
-                              $query->where('status', 'completed')
-                                    ->orWhere('status', 'delivered');
-                          })
-                          ->orderBy('created_at', 'desc')
-                          ->get();
-        }
-        
-        return view('order.history', compact('orders'));
-    }
+
 
     public function allOrders()
     {
@@ -82,6 +42,20 @@ class OrderController extends Controller
         $orders = $user->orders->where('status', '!=', 'completed') ?? collect();
 
         return view('order.all-orders', compact('orders'));
+    }
+
+    public function orderHistory()
+    {
+        $user = auth()->user();
+
+        // Fetch only completed orders for the authenticated user, latest first
+        $orders = $user->orders()
+            ->where('status', 'completed')
+            ->with(['seller', 'orderItems'])
+            ->latest('updated_at')
+            ->get();
+
+        return view('order.order-history', compact('orders'));
     }
 
 
@@ -104,52 +78,52 @@ class OrderController extends Controller
             Log::error('Unauthenticated user attempting to place order');
             return redirect()->route('login')->with('error', 'Please login to place an order.');
         }
-        
+
         // Check if cart exists and has items
         $cart = session('cart');
         if (!$cart || empty($cart)) {
             Log::error('Cart data is invalid or empty for order placement');
             return redirect()->route('home')->with('error', 'Invalid cart data.');
         }
-    
+
         // Calculate total amount
         $totalAmount = collect($cart)->sum(function ($item) {
             return $item['price'] * $item['quantity'];
         });
-        
+
         // Get the first service to determine seller (assuming all services are from same seller)
         $firstServiceId = array_keys($cart)[0];
         $firstService = $this->getService($firstServiceId);
-        
+
         if (!$firstService) {
             Log::error('Invalid service in cart for order placement', ['service_id' => $firstServiceId]);
             return redirect()->route('home')->with('error', 'Invalid service.');
         }
-        
+
         // Get seller from the first service
         $seller = Seller::find($cart[$firstServiceId]['seller_id']);
         if (!$seller) {
             Log::error('Invalid seller_id for order placement', ['seller_id' => $cart[$firstServiceId]['seller_id']]);
             return redirect()->route('home')->with('error', 'Invalid seller.');
         }
-        
+
         // Check if all services in cart are from the same seller
         $sellerIds = collect($cart)->pluck('seller_id')->unique();
         if ($sellerIds->count() > 1) {
             Log::error('Multiple sellers in cart not supported', ['seller_ids' => $sellerIds->toArray()]);
             return redirect()->route('home')->with('error', 'All services must be from the same seller.');
         }
-        
+
         // Check if any cart item is missing seller_id
         $itemsWithoutSeller = collect($cart)->filter(function ($item) {
             return empty($item['seller_id']);
         });
-        
+
         if ($itemsWithoutSeller->count() > 0) {
             Log::error('Cart items missing seller_id', ['items' => $itemsWithoutSeller->keys()->toArray()]);
             return redirect()->route('home')->with('error', 'Some cart items are invalid. Please refresh your cart.');
         }
-    
+
         try {
             Log::info('Attempting to place an order', [
                 'user_id' => auth()->id(),
@@ -158,7 +132,7 @@ class OrderController extends Controller
                 'seller_id' => $seller->id,
                 'seller_name' => $seller->name,
             ]);
-    
+
             // Validate inputs
             $request->validate([
                 'address' => 'required|string|max:255',
@@ -166,8 +140,8 @@ class OrderController extends Controller
                 'payment_method' => 'required|in:cod,online',
                 'transaction_id' => 'required_if:payment_method,online|nullable|string|max:255',
             ]);
-            
-    
+
+
             // This will create the order with seller_id
             $order = Order::create([
                 'user_id' => Auth::id(),
@@ -180,12 +154,12 @@ class OrderController extends Controller
                 'updated_at' => now(),
                 'created_at' => now(),
             ]);
-    
+
             if (!$order) {
                 Log::error('Failed to create order', ['data' => $request->all()]);
                 throw new \Exception('Order creation failed.');
             }
-    
+
             // Add order items
             foreach ($cart as $item) {
                 OrderItem::create([
@@ -195,15 +169,15 @@ class OrderController extends Controller
                     'price' => $item['price'],
                 ]);
             }
-    
+
             // Clear the cart
             session()->forget('cart');
             Log::info('Order Details:', ['details' => json_encode($order->details)]);
             Log::info('Order Items:', ['items' => $order->items]);
             $seller->notify(new \App\Notifications\NewOrderNotification($seller->name, $order->id, json_encode($order->items)));
-            
+
             return redirect()->route('home')->with('success', 'Order placed successfully.');
-    
+
         } catch (\Exception $e) {
             Log::error('Error occurred during order placement', [
                 'error' => $e->getMessage(),
@@ -212,8 +186,8 @@ class OrderController extends Controller
             return redirect()->route('home')->with('error', 'Order placement failed.');
         }
     }
-    
-    
+
+
     private function getService($service_id)
     {
         return Service::find($service_id);
@@ -270,7 +244,7 @@ class OrderController extends Controller
     public function updateOrderStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|string|in:accepted,pickup_departed,picked_up,started_washing,ironing,ready_for_delivery,delivered,completed',
+            'status' => 'required|string|in:accepted,cooking,packed,out_for_delivery,delivered,completed',
         ]);
 
         $sellerId = auth()->guard('seller')->id();
@@ -280,7 +254,7 @@ class OrderController extends Controller
 
         $order->update(['status' => $request->status]);
 
-        // If the order is marked as completed, update the seller's earnings
+        // If the order is marked as completed
         if ($request->status === 'completed') {
             // You could add any additional logic here if needed
             // For example, sending a notification to the customer

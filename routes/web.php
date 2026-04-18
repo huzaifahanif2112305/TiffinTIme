@@ -10,8 +10,9 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\MessageController;
 use App\Http\Controllers\SellerVerificationController;
+use App\Http\Controllers\FavouriteController;
+
 
 
 
@@ -49,17 +50,15 @@ Route::middleware(['auth:seller'])->group(function () {
     Route::get('/seller/edit-service/{id}', [SellerServiceController::class, 'edit'])->name('seller.editService');
     Route::delete('/seller/delete-service/{id}', [SellerServiceController::class, 'delete'])->name('seller.deleteService');
     Route::get('/search-services', [ServiceController::class, 'searchServices'])->name('search.services');
-    
-    // Earnings feature
-    Route::get('/seller/earnings', [SellerController::class, 'earnings'])->name('seller.earnings');
+    Route::get('/seller/earnings', [SellerController::class, 'sellerEarnings'])->name('seller.earnings');
+
+    // Seller Verification Badge
+    Route::get('/seller/verification', [SellerVerificationController::class, 'showForm'])->name('seller.verification.form');
+    Route::post('/seller/verification', [SellerVerificationController::class, 'submit'])->name('seller.verification.submit');
+    Route::get('/seller/verification/status', [SellerVerificationController::class, 'status'])->name('seller.verification.status');
 });
 
-// Seller Verification routes
-Route::middleware(['auth:seller'])->group(function () {
-    Route::get('/seller/verification/apply', [SellerVerificationController::class, 'showVerificationForm'])->name('seller.verification.apply');
-    Route::post('/seller/verification/submit', [SellerVerificationController::class, 'submitVerificationRequest'])->name('seller.verification.submit');
-    Route::get('/seller/verification/status', [SellerVerificationController::class, 'showVerificationStatus'])->name('seller.verification.status');
-});
+
 
 // Admin routes
 
@@ -75,22 +74,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
     Route::post('/admin/login-seller/{id}', [AdminController::class, 'loginAsSeller'])->name('admin.loginSeller');
     Route::post('/admin/return-to-admin', [AdminController::class, 'returnToAdmin'])->name('admin.returnToAdmin');
-    
-    // Admin Verification Management
-    Route::get('/admin/verifications', [\App\Http\Controllers\Admin\VerificationController::class, 'index'])->name('admin.verifications.index');
-    Route::get('/admin/verifications/{verification}', [\App\Http\Controllers\Admin\VerificationController::class, 'show'])->name('admin.verifications.show');
-    Route::post('/admin/verifications/{verification}/approve', [\App\Http\Controllers\Admin\VerificationController::class, 'approve'])->name('admin.verifications.approve');
-    Route::post('/admin/verifications/{verification}/reject', [\App\Http\Controllers\Admin\VerificationController::class, 'reject'])->name('admin.verifications.reject');
-});   
+
+    // Admin Verification Badge Management
+    Route::get('/admin/verifications', [AdminController::class, 'verificationRequests'])->name('admin.verifications');
+    Route::post('/admin/verifications/{id}/approve', [AdminController::class, 'approveVerification'])->name('admin.verification.approve');
+    Route::post('/admin/verifications/{id}/reject', [AdminController::class, 'rejectVerification'])->name('admin.verification.reject');
+});
+
 
 Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit')->middleware('auth');
 Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
 
 Route::middleware('auth')->group(function () {
-Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
-Route::get('notifications/{id}/redirect', [NotificationController::class, 'redirectToService'])->name('notifications.redirect');
-Route::post('notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::get('notifications/{id}/redirect', [NotificationController::class, 'redirectToService'])->name('notifications.redirect');
+    Route::post('notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
 
 Route::get('/sellers/{seller}', [ServiceController::class, 'showSellerServices'])->name('sellers.services');
@@ -113,7 +112,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{order}/track', [OrderController::class, 'track'])->name('order.track');
     Route::get('/order/track/{order}', [OrderController::class, 'trackOrder'])->name('order.track');
     Route::post('/order/{order}/accept-reject', [OrderController::class, 'acceptRejectOrder'])->name('order.acceptReject');
-    Route::get('/order/history', [OrderController::class, 'history'])->name('order.history');
+
     Route::get('/order/{id}', [OrderController::class, 'show'])->name('order.show');
 });
 
@@ -123,8 +122,14 @@ Route::post('/seller/order/{order}/update-status', [OrderController::class, 'upd
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/orders', [OrderController::class, 'allOrders'])->name('order.all');
+    Route::get('/order-history', [OrderController::class, 'orderHistory'])->name('order.history');
     Route::get('/orders/{order}/track', [OrderController::class, 'track'])->name('order.track');
     // Route::post('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/my-favourites', [FavouriteController::class, 'index'])->name('favourites.index');
+    Route::post('/favourite/toggle', [FavouriteController::class, 'toggle'])->name('favourite.toggle');
 });
 
 Route::get('/sellers/{seller_id}/services', [SellerController::class, 'showServices'])->name('seller.services');
@@ -132,25 +137,10 @@ Route::get('/sellers/{seller_id}/services', [SellerController::class, 'showServi
 
 
 
-// User (buyer) chat routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/chat/{order}', [MessageController::class, 'chat'])->name('chat.index');
-    Route::post('/chat/{order}/send', [MessageController::class, 'send'])->name('chat.send');
-    Route::post('/chat/{order}/read', [MessageController::class, 'markAsRead'])->name('chat.mark-read');
-    Route::get('/chat/{order}/messages', [MessageController::class, 'getMessages'])->name('chat.get-messages');
-});
-
-// Seller chat routes
-Route::middleware(['auth:seller'])->group(function () {
-    Route::get('/seller/chat/{order}', [MessageController::class, 'chat'])->name('seller.chat.index');
-    Route::post('/seller/chat/{order}/send', [MessageController::class, 'send'])->name('seller.chat.send');
-    Route::post('/seller/chat/{order}/read', [MessageController::class, 'markAsRead'])->name('seller.chat.mark-read');
-    Route::get('/seller/chat/{order}/messages', [MessageController::class, 'getMessages'])->name('seller.chat.get-messages');
-});
 
 
-Route::get('/order/{id}/feedback', [OrderController::class, 'feedback'])->name('order.feedback');
-Route::post('/order/{id}/feedback', [OrderController::class, 'submitFeedback'])->name('order.feedback.submit');
+
+
 
 
 Route::get('/seller/order/{order}/handle', [OrderController::class, 'handleOrder'])
