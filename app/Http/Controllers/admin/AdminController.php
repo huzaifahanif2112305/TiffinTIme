@@ -8,6 +8,7 @@ use App\Models\SellerVerification;
 use Illuminate\Http\Request;
 use App\Models\Service;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 
 
@@ -66,8 +67,9 @@ public function rejectService($id)
     $pendingServices = Service::where('is_approved', 0)->get();
     $sellers = Seller::where('accountIsApproved', 1)->where('is_deleted', 0)->get();
     $pendingVerifications = SellerVerification::where('status', 'pending')->count();
+    $totalUsers = User::where('sellerType', '!=', 1)->count();
 
-    return view('admin.dashboard', compact('pendingSellers', 'pendingServices', 'sellers', 'pendingVerifications'));
+    return view('admin.dashboard', compact('pendingSellers', 'pendingServices', 'sellers', 'pendingVerifications', 'totalUsers'));
 }
 
     // ===== SELLER VERIFICATION ADMIN METHODS =====
@@ -175,5 +177,32 @@ public function manageSellers()
         session()->forget('admin_id');
         
         return redirect()->route('admin.dashboard');
+    }
+
+    public function manageUsers(Request $request)
+    {
+        $search = $request->input('search');
+
+        $users = User::where('sellerType', '!=', 1)
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.users', compact('users'));
+    }
+
+    public function toggleSuspendUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->is_suspended = !$user->is_suspended;
+        $user->save();
+
+        $status = $user->is_suspended ? 'User suspended successfully.' : 'User unsuspended successfully.';
+        return redirect()->back()->with('status', $status);
     }
 }

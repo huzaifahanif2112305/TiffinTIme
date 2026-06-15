@@ -206,6 +206,14 @@
                     </li>
 
                     <li class="nav-item">
+                        <a href="{{ route('admin.users') }}"
+                            class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                            <i class="fas fa-users"></i>
+                            <span>Users</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a href="{{ route('admin.services') }}"
                             class="nav-link {{ request()->routeIs('admin.services') ? 'active' : '' }}">
                             <i class="fas fa-box"></i>

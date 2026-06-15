@@ -413,6 +413,10 @@
 
         .status-pending { background: #fff7ed; color: #c2410c; }
         .status-accepted { background: #eff6ff; color: #1d4ed8; }
+        .status-cooking { background: #ffe5e7; color: #cc222e; }
+        .status-packed { background: #f3e8ff; color: #7e22ce; }
+        .status-out_for_delivery { background: #e0e7ff; color: #4338ca; }
+        .status-delivered { background: #f0fdf4; color: #15803d; }
         .status-completed { background: #f0fdf4; color: #15803d; }
         .status-cancelled { background: #fef2f2; color: #b91c1c; }
 
@@ -744,29 +748,61 @@
                                                 $statusClass = match ($order->status) {
                                                     'pending' => 'status-pending',
                                                     'accepted' => 'status-accepted',
+                                                    'cooking' => 'status-cooking',
+                                                    'packed' => 'status-packed',
+                                                    'out_for_delivery' => 'status-out_for_delivery',
+                                                    'delivered' => 'status-delivered',
                                                     'completed' => 'status-completed',
+                                                    'rejected' => 'status-cancelled',
                                                     'cancelled' => 'status-cancelled',
                                                     default => 'status-pending'
                                                 };
                                                 $statusIcon = match ($order->status) {
                                                     'pending' => 'fa-clock',
                                                     'accepted' => 'fa-check',
+                                                    'cooking' => 'fa-fire',
+                                                    'packed' => 'fa-box',
+                                                    'out_for_delivery' => 'fa-motorcycle',
+                                                    'delivered' => 'fa-check',
                                                     'completed' => 'fa-check-double',
+                                                    'rejected' => 'fa-times-circle',
                                                     'cancelled' => 'fa-times',
                                                     default => 'fa-circle'
                                                 };
                                             @endphp
                                             <span class="status-badge {{ $statusClass }}">
-                                                <i class="fas {{ $statusIcon }}"></i> {{ ucfirst(str_replace('_', ' ', $order->status)) }}
+                                                <i class="fas {{ $statusIcon }} me-1"></i> {{ ucfirst(str_replace('_', ' ', $order->status)) }}
                                             </span>
+                                            @if($order->status === 'cancelled' || $order->status === 'rejected')
+                                                @if($order->cancellation_reason)
+                                                    <div class="text-muted small mt-1" style="font-size: 0.75rem; max-width: 150px; white-space: normal;">
+                                                        <strong>Reason:</strong> {{ $order->cancellation_reason }}
+                                                    </div>
+                                                @endif
+                                                @if($order->refund_status && $order->refund_status !== 'none')
+                                                    <div class="text-info small mt-1" style="font-size: 0.75rem;">
+                                                        <i class="fas fa-credit-card me-1"></i> Refund: {{ ucwords($order->refund_status) }}
+                                                    </div>
+                                                @endif
+                                            @endif
                                         </td>
                                         <td class="text-end">
                                             @if($order->status === 'pending')
-                                                <form action="{{ route('order.acceptReject', $order) }}" method="POST" class="d-inline-block">
-                                                    @csrf
-                                                    <button type="submit" name="status" value="accepted" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm me-1"><i class="fas fa-check"></i></button>
-                                                    <button type="submit" name="status" value="rejected" class="btn btn-sm btn-danger rounded-pill px-3 shadow-sm"><i class="fas fa-times"></i></button>
-                                                </form>
+                                                <div class="d-inline-flex">
+                                                    <form action="{{ route('order.acceptReject', $order) }}" method="POST" class="d-inline-block me-1">
+                                                        @csrf
+                                                        <input type="hidden" name="status" value="accepted">
+                                                        <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm" title="Accept Order"><i class="fas fa-check"></i></button>
+                                                    </form>
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-danger rounded-pill px-3 shadow-sm reject-order-btn" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#sellerRejectModal" 
+                                                            data-action="{{ route('order.acceptReject', $order) }}"
+                                                            title="Reject Order">
+                                                        <i class="fas fa-times" style="pointer-events: none;"></i>
+                                                    </button>
+                                                </div>
                                             @else
                                                 <a href="{{ route('seller.order.handle', $order) }}" class="btn btn-sm btn-light rounded-pill px-3 border">
                                                     Details
@@ -799,6 +835,53 @@
             // Custom toast creation or sweetalert could go here
             // For now relying on standard bootstrap styling if needed or ignoring
         @endif
+    </script>
+
+    <!-- Seller Reject Order Modal -->
+    <div class="modal fade" id="sellerRejectModal" tabindex="-1" aria-labelledby="sellerRejectModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-danger text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold" id="sellerRejectModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Reject Order
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="sellerRejectForm" method="POST" action="">
+                    @csrf
+                    <input type="hidden" name="status" value="rejected">
+                    <div class="modal-body p-4">
+                        <p class="text-muted">Are you sure you want to reject this order? Please provide a reason for the customer.</p>
+                        <div class="mb-3">
+                            <label for="seller_rejection_reason" class="form-label fw-bold">Reason for Rejection <span class="text-danger">*</span></label>
+                            <textarea class="form-control rounded-3" id="seller_rejection_reason" name="cancellation_reason" rows="3" required placeholder="e.g. Out of ingredients, kitchen closed, too busy..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-3 bg-light rounded-bottom-4">
+                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger rounded-pill px-4">Reject Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sellerRejectModal = document.getElementById('sellerRejectModal');
+            if (sellerRejectModal) {
+                sellerRejectModal.addEventListener('show.bs.modal', function(event) {
+                    const triggerEl = event.relatedTarget.closest('[data-action]') || event.relatedTarget;
+                    const actionUrl = triggerEl.getAttribute('data-action');
+                    const form = sellerRejectModal.querySelector('#sellerRejectForm');
+                    form.action = actionUrl;
+                    
+                    // Clear previous input
+                    const textarea = sellerRejectModal.querySelector('#seller_rejection_reason');
+                    if (textarea) textarea.value = '';
+                });
+            }
+        });
     </script>
 </body>
 </html>

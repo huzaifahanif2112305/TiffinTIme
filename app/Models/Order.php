@@ -18,8 +18,22 @@ class Order extends Model
         'phone',
         'status',
         'total_amount',
-        'transaction_id'
+        'transaction_id',
+        'cancelled_by',
+        'cancellation_reason',
+        'cancelled_at',
+        'refund_status'
     ];
+
+    public function isCancellableByBuyer()
+    {
+        return in_array($this->status, ['pending', 'accepted']);
+    }
+
+    public function isCancellableBySeller()
+    {
+        return !in_array($this->status, ['completed', 'delivered', 'cancelled', 'rejected']);
+    }
 
     public function items()
     {
@@ -40,9 +54,9 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-
-
-
-
-
+    // Relationship with Message
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
 }

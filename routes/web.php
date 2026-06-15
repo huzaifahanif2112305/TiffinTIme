@@ -12,6 +12,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SellerVerificationController;
 use App\Http\Controllers\FavouriteController;
+use App\Http\Controllers\ChatController;
 
 
 
@@ -56,6 +57,10 @@ Route::middleware(['auth:seller'])->group(function () {
     Route::get('/seller/verification', [SellerVerificationController::class, 'showForm'])->name('seller.verification.form');
     Route::post('/seller/verification', [SellerVerificationController::class, 'submit'])->name('seller.verification.submit');
     Route::get('/seller/verification/status', [SellerVerificationController::class, 'status'])->name('seller.verification.status');
+
+    // Chat routes for Seller
+    Route::get('/seller/orders/{order}/messages', [ChatController::class, 'fetchMessagesSeller'])->name('seller.orders.messages.index');
+    Route::post('/seller/orders/{order}/messages', [ChatController::class, 'sendMessageSeller'])->name('seller.orders.messages.store');
 });
 
 
@@ -79,6 +84,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/verifications', [AdminController::class, 'verificationRequests'])->name('admin.verifications');
     Route::post('/admin/verifications/{id}/approve', [AdminController::class, 'approveVerification'])->name('admin.verification.approve');
     Route::post('/admin/verifications/{id}/reject', [AdminController::class, 'rejectVerification'])->name('admin.verification.reject');
+
+    // Admin User Suspension Management
+    Route::get('/admin/users', [AdminController::class, 'manageUsers'])->name('admin.users');
+    Route::post('/admin/users/{id}/toggle-suspend', [AdminController::class, 'toggleSuspendUser'])->name('admin.users.toggle-suspend');
 });
 
 
@@ -114,6 +123,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/order/{order}/accept-reject', [OrderController::class, 'acceptRejectOrder'])->name('order.acceptReject');
 
     Route::get('/order/{id}', [OrderController::class, 'show'])->name('order.show');
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+
+    // Chat routes for Buyer (User)
+    Route::get('/orders/{order}/messages', [ChatController::class, 'fetchMessages'])->name('orders.messages.index');
+    Route::post('/orders/{order}/messages', [ChatController::class, 'sendMessage'])->name('orders.messages.store');
 });
 
 // Remove this duplicate route that's causing confusion
@@ -145,6 +159,10 @@ Route::get('/sellers/{seller_id}/services', [SellerController::class, 'showServi
 
 Route::get('/seller/order/{order}/handle', [OrderController::class, 'handleOrder'])
     ->name('seller.order.handle')
+    ->middleware('auth:seller');
+
+Route::post('/seller/order/{order}/cancel', [OrderController::class, 'sellerCancel'])
+    ->name('seller.order.cancel')
     ->middleware('auth:seller');
 
 

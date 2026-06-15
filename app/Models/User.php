@@ -30,7 +30,8 @@ class User extends Authenticatable
         'zip',
         'pickup_time',
         'is_verified',
-        'otp'
+        'otp',
+        'is_suspended'
     ];
 
     
@@ -54,6 +55,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_suspended' => 'boolean',
         ];
     }
         public function orders()

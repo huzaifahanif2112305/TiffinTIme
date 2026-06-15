@@ -86,11 +86,31 @@
     </header>
 
     <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
+        <!-- Session Messages -->
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4 animate__animated animate__fadeIn" role="alert">
+                <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4 animate__animated animate__fadeIn" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        <div class="row justify-content-center g-4">
+            <!-- Left Side: Order Progress & Details -->
+            <div class="col-lg-7">
                 <div class="card shadow-lg border-0">
-                    <div class="card-header bg-white border-0 p-4">
+                    <div class="card-header bg-white border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
                         <h2 class="section-title mb-0">Order Tracking</h2>
+                        @if($order->isCancellableByBuyer())
+                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                                <i class="fas fa-times me-1"></i> Cancel Order
+                            </button>
+                        @endif
                     </div>
                     <div class="card-body p-4">
                         <!-- Order Status Alert -->
@@ -99,14 +119,43 @@
                                 <i class="bi bi-hourglass-split me-2"></i> Your order is pending confirmation.
                             </div>
                         @elseif($order->status == 'rejected')
-                            <div class="alert alert-danger animate__animated animate__fadeIn">
-                                <i class="bi bi-x-circle me-2"></i> Your order was rejected. Please contact customer service
-                                for more information.
+                            <div class="alert alert-danger animate__animated animate__fadeIn p-4 border-0 shadow-sm rounded-4">
+                                <h5 class="fw-bold mb-2"><i class="bi bi-x-circle me-2"></i> Order Rejected by Kitchen</h5>
+                                <p class="mb-2">We are sorry, but the kitchen could not fulfill your order.</p>
+                                @if($order->cancellation_reason)
+                                    <div class="bg-white bg-opacity-75 p-3 rounded-3 mb-2 text-dark text-sm">
+                                        <strong>Reason:</strong> {{ $order->cancellation_reason }}
+                                    </div>
+                                @endif
+                                @if($order->refund_status && $order->refund_status !== 'none')
+                                    <div class="alert alert-info py-2 px-3 mb-2 border-0 small d-flex align-items-center gap-2 text-dark">
+                                        <i class="bi bi-credit-card"></i>
+                                        <span><strong>Refund Status:</strong> {{ ucwords($order->refund_status) }}</span>
+                                    </div>
+                                @endif
+                                @if($order->cancelled_at)
+                                    <small class="d-block text-muted-50">Rejected on {{ \Carbon\Carbon::parse($order->cancelled_at)->format('M d, Y \a\t h:i A') }}</small>
+                                @endif
                             </div>
                         @elseif($order->status == 'cancelled')
-                            <div class="alert alert-danger animate__animated animate__fadeIn">
-                                <i class="bi bi-slash-circle me-2"></i> Your order was cancelled. Please contact customer
-                                service for more information.
+                            <div class="alert alert-danger animate__animated animate__fadeIn p-4 border-0 shadow-sm rounded-4">
+                                <h5 class="fw-bold mb-2"><i class="bi bi-slash-circle me-2"></i> Order Cancelled</h5>
+                                <p class="mb-2">This order has been cancelled.</p>
+                                <div class="bg-white bg-opacity-75 p-3 rounded-3 mb-2 text-dark text-sm">
+                                    <span class="d-block mb-1"><strong>Cancelled By:</strong> {{ $order->cancelled_by === 'user' ? 'You (Customer)' : 'Kitchen (Seller)' }}</span>
+                                    @if($order->cancellation_reason)
+                                        <span class="d-block"><strong>Reason:</strong> {{ $order->cancellation_reason }}</span>
+                                    @endif
+                                </div>
+                                @if($order->refund_status && $order->refund_status !== 'none')
+                                    <div class="alert alert-info py-2 px-3 mb-2 border-0 small d-flex align-items-center gap-2">
+                                        <i class="bi bi-credit-card"></i>
+                                        <span><strong>Refund Status:</strong> {{ ucwords($order->refund_status) }}</span>
+                                    </div>
+                                @endif
+                                @if($order->cancelled_at)
+                                    <small class="d-block text-muted-50">Cancelled on {{ \Carbon\Carbon::parse($order->cancelled_at)->format('M d, Y \a\t h:i A') }}</small>
+                                @endif
                             </div>
                         @elseif($order->status == 'cooking')
                             <div class="alert alert-info animate__animated animate__fadeIn">
@@ -275,10 +324,18 @@
                                 @endforeach
                             </div>
                         </div>
-
-
                     </div>
                 </div>
+            </div>
+
+            <!-- Right Side: Order Chat Support -->
+            <div class="col-lg-5">
+                <x-order-chat 
+                    :order="$order" 
+                    userType="user" 
+                    :fetchUrl="route('orders.messages.index', $order)" 
+                    :sendUrl="route('orders.messages.store', $order)"
+                />
             </div>
         </div>
     </div>
@@ -296,6 +353,34 @@
             </div>
         </div>
     </footer>
+
+    <!-- Cancel Order Modal -->
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-danger text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold" id="cancelOrderModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Cancel Order
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="cancelOrderForm" method="POST" action="{{ route('orders.cancel', $order) }}">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <p class="text-muted">Are you sure you want to cancel this order? This action cannot be undone.</p>
+                        <div class="mb-3">
+                            <label for="cancellation_reason" class="form-label fw-bold">Reason for Cancellation <span class="text-danger">*</span></label>
+                            <textarea class="form-control rounded-3" id="cancellation_reason" name="cancellation_reason" rows="3" required placeholder="Please let us know why you are cancelling this order..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-3 bg-light rounded-bottom-4">
+                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Keep Order</button>
+                        <button type="submit" class="btn btn-danger rounded-pill px-4">Cancel Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

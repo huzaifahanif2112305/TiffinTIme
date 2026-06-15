@@ -222,13 +222,113 @@ class OrderController extends Controller
     {
         $request->validate([
             'status' => 'required|string|in:accepted,rejected',
+            'cancellation_reason' => 'required_if:status,rejected|nullable|string|max:1000',
+        ]);
+
+        $status = $request->input('status');
+        $updateData = ['status' => $status];
+
+        if ($status === 'rejected') {
+            $updateData['cancelled_by'] = 'seller';
+            $updateData['cancellation_reason'] = $request->input('cancellation_reason') ?? 'Kitchen rejected the order.';
+            $updateData['cancelled_at'] = now();
+            if ($order->transaction_id) {
+                $updateData['refund_status'] = 'pending';
+            }
+        }
+
+        $order->update($updateData);
+
+        if ($status === 'rejected') {
+            // Notify buyer
+            try {
+                $order->user->notify(new \App\Notifications\OrderCancelledNotification(
+                    $order,
+                    'seller',
+                    $order->cancellation_reason,
+                    $order->seller->name
+                ));
+            } catch (\Exception $e) {
+                Log::error('Failed to send rejection notification: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->route('seller.panel')->with('success', 'Order status updated successfully.');
+    }
+
+    public function cancel(Request $request, Order $order)
+    {
+        if ($order->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if (!$order->isCancellableByBuyer()) {
+            return redirect()->back()->with('error', 'This order cannot be cancelled anymore.');
+        }
+
+        $request->validate([
+            'cancellation_reason' => 'required|string|max:1000',
         ]);
 
         $order->update([
-            'status' => $request->input('status'),
+            'status' => 'cancelled',
+            'cancelled_by' => 'user',
+            'cancellation_reason' => $request->input('cancellation_reason'),
+            'cancelled_at' => now(),
+            'refund_status' => $order->transaction_id ? 'pending' : 'none',
         ]);
 
-        return redirect()->route('seller.panel')->with('success', 'Order status updated successfully.');
+        // Notify seller
+        try {
+            $order->seller->notify(new \App\Notifications\OrderCancelledNotification(
+                $order,
+                'user',
+                $order->cancellation_reason,
+                auth()->user()->name
+            ));
+        } catch (\Exception $e) {
+            Log::error('Failed to send cancellation notification to seller: ' . $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', 'Order cancelled successfully.');
+    }
+
+    public function sellerCancel(Request $request, Order $order)
+    {
+        $sellerId = auth()->guard('seller')->id();
+        if ($order->seller_id !== $sellerId) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if (!$order->isCancellableBySeller()) {
+            return redirect()->back()->with('error', 'This order cannot be cancelled anymore.');
+        }
+
+        $request->validate([
+            'cancellation_reason' => 'required|string|max:1000',
+        ]);
+
+        $order->update([
+            'status' => 'cancelled',
+            'cancelled_by' => 'seller',
+            'cancellation_reason' => $request->input('cancellation_reason'),
+            'cancelled_at' => now(),
+            'refund_status' => $order->transaction_id ? 'pending' : 'none',
+        ]);
+
+        // Notify buyer
+        try {
+            $order->user->notify(new \App\Notifications\OrderCancelledNotification(
+                $order,
+                'seller',
+                $order->cancellation_reason,
+                auth()->guard('seller')->user()->name
+            ));
+        } catch (\Exception $e) {
+            Log::error('Failed to send cancellation notification to buyer: ' . $e->getMessage());
+        }
+
+        return redirect()->route('seller.panel')->with('success', 'Order cancelled successfully.');
     }
 
     public function handleOrder(Order $order)

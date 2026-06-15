@@ -261,6 +261,31 @@
 
     <div class="container orders-container">
         <h1 class="page-title">Your Orders</h1>
+
+        <!-- Session Messages & Validation Errors -->
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4" role="alert">
+                <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        @if($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <ul class="mb-0 ps-3 d-inline-block text-start">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
         
         @if($orders->isEmpty())
             <div class="empty-orders">
@@ -308,6 +333,18 @@
                                             $statusText = ucwords(str_replace('_', ' ', $order->status));
                                         @endphp
                                         <span class="order-status status-{{ $order->status }}">{!! $icon !!} {{ $statusText }}</span>
+                                        @if($order->status === 'cancelled' || $order->status === 'rejected')
+                                            @if($order->cancellation_reason)
+                                                <div class="text-muted small mt-1" style="font-size: 0.8rem; max-width: 180px; white-space: normal;">
+                                                    <strong>Reason:</strong> {{ $order->cancellation_reason }}
+                                                </div>
+                                            @endif
+                                            @if($order->refund_status && $order->refund_status !== 'none')
+                                                <div class="text-info small mt-1" style="font-size: 0.8rem;">
+                                                    <i class="bi bi-credit-card me-1"></i> Refund: {{ ucwords($order->refund_status) }}
+                                                </div>
+                                            @endif
+                                        @endif
                                     </td>
                                     <td>{{ $order->orderItems ? $order->orderItems->count() : 0 }}</td>
                                     <td>{{ number_format($order->total_amount, 2) }} PKR</td>
@@ -316,9 +353,20 @@
                                         <div class="order-date">{{ $order->created_at->format('h:i A') }}</div>
                                     </td>
                                     <td>
-                                        <a href="{{ route('order.track', $order) }}" class="track-button">
-                                            <i class="fas fa-truck"></i> Track
-                                        </a>
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ route('order.track', $order) }}" class="track-button">
+                                                <i class="fas fa-truck"></i> Track
+                                            </a>
+                                            @if($order->isCancellableByBuyer())
+                                                <button class="btn btn-outline-danger btn-sm rounded-pill px-3 cancel-order-btn d-inline-flex align-items-center justify-content-center" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#cancelOrderModal" 
+                                                        data-action="{{ route('orders.cancel', $order) }}"
+                                                        style="font-size: 0.9rem; font-weight: 600; transition: all 0.2s;">
+                                                    <i class="fas fa-times me-1" style="pointer-events: none;"></i> Cancel
+                                                </button>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -337,6 +385,52 @@
             </div>
         </div>
     </footer>
+
+    <!-- Cancel Order Modal -->
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-danger text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold" id="cancelOrderModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Cancel Order
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="cancelOrderForm" method="POST" action="">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <p class="text-muted">Are you sure you want to cancel this order? This action cannot be undone.</p>
+                        <div class="mb-3">
+                            <label for="cancellation_reason" class="form-label fw-bold">Reason for Cancellation <span class="text-danger">*</span></label>
+                            <textarea class="form-control rounded-3" id="cancellation_reason" name="cancellation_reason" rows="3" required placeholder="Please let us know why you are cancelling this order..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-3 bg-light rounded-bottom-4">
+                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Keep Order</button>
+                        <button type="submit" class="btn btn-danger rounded-pill px-4">Cancel Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cancelOrderModal = document.getElementById('cancelOrderModal');
+            if (cancelOrderModal) {
+                cancelOrderModal.addEventListener('show.bs.modal', function(event) {
+                    const triggerEl = event.relatedTarget.closest('[data-action]') || event.relatedTarget;
+                    const actionUrl = triggerEl.getAttribute('data-action');
+                    const form = cancelOrderModal.querySelector('#cancelOrderForm');
+                    form.action = actionUrl;
+                    
+                    // Clear previous input
+                    const textarea = cancelOrderModal.querySelector('#cancellation_reason');
+                    if (textarea) textarea.value = '';
+                });
+            }
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

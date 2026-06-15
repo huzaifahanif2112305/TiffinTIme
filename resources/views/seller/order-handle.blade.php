@@ -313,6 +313,16 @@
             color: #15803d;
         }
 
+        .status-rejected {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
         .info-row {
             display: flex;
             justify-content: space-between;
@@ -392,6 +402,8 @@
                             'out_for_delivery' => 'status-out_for_delivery',
                             'delivered' => 'status-delivered',
                             'completed' => 'status-completed',
+                            'rejected' => 'status-cancelled',
+                            'cancelled' => 'status-cancelled',
                             default => 'bg-light text-dark'
                         };
                     @endphp
@@ -436,38 +448,89 @@
                     @endphp
 
                     <div class="status-action-area">
-                        @php
-                            $nextStatusKey = null;
-                            $keys = array_keys($statusFlow);
-                            if ($currentStatusIndex !== false && $currentStatusIndex < count($keys) - 1) {
-                                $nextStatusKey = $keys[$currentStatusIndex + 1];
-                            }
-                        @endphp
-
-                        @if($nextStatusKey && $order->status !== 'rejected')
-                            <h4 class="fw-bold mb-3">Next Step</h4>
-                            <p class="text-muted mb-4">Move order to <strong>{{ $statusFlow[$nextStatusKey] }}</strong>
-                                phase?</p>
-
-                            <form action="{{ route('order.updateStatus', $order) }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="status" value="{{ $nextStatusKey }}">
-                                <button type="submit" class="status-btn-lg">
-                                    <i class="fas fa-check-circle"></i> Mark as {{ $statusFlow[$nextStatusKey] }}
+                        @if($order->status === 'pending')
+                            <h4 class="fw-bold mb-3 text-warning"><i class="fas fa-clock"></i> Pending Confirmation</h4>
+                            <p class="text-muted mb-4">Accept or reject this new order.</p>
+                            <div class="d-flex justify-content-center gap-3">
+                                <form action="{{ route('order.acceptReject', $order) }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="status" value="accepted">
+                                    <button type="submit" class="btn btn-success btn-lg rounded-pill px-4">
+                                        <i class="fas fa-check-circle me-1"></i> Accept Order
+                                    </button>
+                                </form>
+                                <button type="button" class="btn btn-danger btn-lg rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#sellerRejectModal">
+                                    <i class="fas fa-times-circle me-1"></i> Reject Order
                                 </button>
-                            </form>
-                        @elseif($order->status === 'completed')
-                            <div class="text-success">
-                                <i class="fas fa-check-circle fa-3x mb-3"></i>
-                                <h3>Order Completed</h3>
-                                <p>This order has been successfully fulfilled.</p>
+                            </div>
+                        @elseif($order->status === 'rejected')
+                            <div class="text-danger">
+                                <i class="fas fa-times-circle fa-3x mb-3"></i>
+                                <h3>Order Rejected</h3>
+                                <p>You rejected this order.</p>
+                                @if($order->cancellation_reason)
+                                    <div class="alert alert-danger d-inline-block text-start mt-2 border-0 shadow-sm rounded-3">
+                                        <strong>Reason:</strong> {{ $order->cancellation_reason }}
+                                    </div>
+                                @endif
+                            </div>
+                        @elseif($order->status === 'cancelled')
+                            <div class="text-danger">
+                                <i class="fas fa-ban fa-3x mb-3"></i>
+                                <h3>Order Cancelled</h3>
+                                <p>This order was cancelled by <strong>{{ $order->cancelled_by === 'user' ? 'Customer' : 'Kitchen' }}</strong>.</p>
+                                @if($order->cancellation_reason)
+                                    <div class="alert alert-danger d-inline-block text-start mt-2 border-0 shadow-sm rounded-3">
+                                        <strong>Reason:</strong> {{ $order->cancellation_reason }}
+                                    </div>
+                                @endif
+                                @if($order->refund_status && $order->refund_status !== 'none')
+                                    <div class="alert alert-info d-inline-block text-start mt-2 border-0 shadow-sm rounded-3 text-dark">
+                                        <i class="fas fa-credit-card me-1"></i> <strong>Refund Status:</strong> {{ ucwords($order->refund_status) }}
+                                    </div>
+                                @endif
                             </div>
                         @else
-                            <div class="text-muted">
-                                <i class="fas fa-ban fa-3x mb-3"></i>
-                                <h3>No Actions Available</h3>
-                                <p>This order cannot be updated further.</p>
-                            </div>
+                            @php
+                                $nextStatusKey = null;
+                                $keys = array_keys($statusFlow);
+                                if ($currentStatusIndex !== false && $currentStatusIndex < count($keys) - 1) {
+                                    $nextStatusKey = $keys[$currentStatusIndex + 1];
+                                }
+                            @endphp
+
+                            @if($nextStatusKey)
+                                <h4 class="fw-bold mb-3">Next Step</h4>
+                                <p class="text-muted mb-4">Move order to <strong>{{ $statusFlow[$nextStatusKey] }}</strong> phase?</p>
+
+                                <form action="{{ route('order.updateStatus', $order) }}" method="POST" class="d-inline-block">
+                                    @csrf
+                                    <input type="hidden" name="status" value="{{ $nextStatusKey }}">
+                                    <button type="submit" class="status-btn-lg">
+                                        <i class="fas fa-check-circle"></i> Mark as {{ $statusFlow[$nextStatusKey] }}
+                                    </button>
+                                </form>
+                            @elseif($order->status === 'completed')
+                                <div class="text-success">
+                                    <i class="fas fa-check-circle fa-3x mb-3"></i>
+                                    <h3>Order Completed</h3>
+                                    <p>This order has been successfully fulfilled.</p>
+                                </div>
+                            @else
+                                <div class="text-muted">
+                                    <i class="fas fa-ban fa-3x mb-3"></i>
+                                    <h3>No Actions Available</h3>
+                                    <p>This order cannot be updated further.</p>
+                                </div>
+                            @endif
+
+                            @if($order->isCancellableBySeller())
+                                <div class="mt-4 pt-3 border-top">
+                                    <button type="button" class="btn btn-outline-danger rounded-pill px-4 py-2" data-bs-toggle="modal" data-bs-target="#sellerCancelModal">
+                                        <i class="fas fa-times-circle me-1"></i> Cancel Order
+                                    </button>
+                                </div>
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -548,7 +611,7 @@
                 </div>
 
                 <!-- Payment Info -->
-                <div class="custom-card animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+                <div class="custom-card mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
                     <div class="card-header-custom">
                         <div class="card-title-custom"><i class="fas fa-wallet text-primary"></i> Payment</div>
                     </div>
@@ -573,7 +636,78 @@
                             Please create invoice before delivery.
                         @endif
                     </div>
+                    @if($order->refund_status && $order->refund_status !== 'none')
+                        <div class="alert alert-info d-flex align-items-center gap-2 mb-0 mt-3 text-dark" style="font-size: 0.85rem;">
+                            <i class="fas fa-undo"></i>
+                            <span>Refund Status: <strong>{{ ucwords($order->refund_status) }}</strong></span>
+                        </div>
+                    @endif
                 </div>
+
+                <!-- Chat Support -->
+                <x-order-chat 
+                    :order="$order" 
+                    userType="seller" 
+                    :fetchUrl="route('seller.orders.messages.index', $order)" 
+                    :sendUrl="route('seller.orders.messages.store', $order)"
+                />
+            </div>
+        </div>
+    </div>
+
+    <!-- Seller Reject Order Modal -->
+    <div class="modal fade" id="sellerRejectModal" tabindex="-1" aria-labelledby="sellerRejectModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-danger text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold" id="sellerRejectModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Reject Order
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="sellerRejectForm" method="POST" action="{{ route('order.acceptReject', $order) }}">
+                    @csrf
+                    <input type="hidden" name="status" value="rejected">
+                    <div class="modal-body p-4">
+                        <p class="text-muted">Are you sure you want to reject this order? Please provide a reason for the customer.</p>
+                        <div class="mb-3">
+                            <label for="seller_rejection_reason" class="form-label fw-bold">Reason for Rejection <span class="text-danger">*</span></label>
+                            <textarea class="form-control rounded-3" id="seller_rejection_reason" name="cancellation_reason" rows="3" required placeholder="e.g. Out of ingredients, kitchen closed, too busy..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-3 bg-light rounded-bottom-4">
+                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger rounded-pill px-4">Reject Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seller Cancel Order Modal -->
+    <div class="modal fade" id="sellerCancelModal" tabindex="-1" aria-labelledby="sellerCancelModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-danger text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold" id="sellerCancelModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Cancel Order
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="sellerCancelForm" method="POST" action="{{ route('seller.order.cancel', $order) }}">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <p class="text-muted">Are you sure you want to cancel this order? This action cannot be undone.</p>
+                        <div class="mb-3">
+                            <label for="seller_cancellation_reason" class="form-label fw-bold">Reason for Cancellation <span class="text-danger">*</span></label>
+                            <textarea class="form-control rounded-3" id="seller_cancellation_reason" name="cancellation_reason" rows="3" required placeholder="e.g. Courier unavailable, kitchen issue, customer requested..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-3 bg-light rounded-bottom-4">
+                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger rounded-pill px-4">Cancel Order</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -178,10 +178,16 @@ public function register(Request $request)
     
         // Attempt to authenticate the user with provided credentials
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            // Check if user is suspended
+            if ($user->is_suspended) {
+                Auth::logout();
+                return back()->withErrors(['login' => "Can't login, suspended by admin."])->withInput();
+            }
+
             // Regenerate session to prevent session fixation attacks
             $request->session()->regenerate();
-    
-            $user = Auth::user();
     
             // Test Case 3: If user credentials are valid, check for admin
             if ($user->id == 1 || $user->sellerType == 1) {

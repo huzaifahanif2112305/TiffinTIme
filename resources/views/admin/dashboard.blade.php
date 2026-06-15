@@ -54,6 +54,20 @@
                 </div>
             </div>
 
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="summary-card danger h-100">
+                    <div class="summary-card-body">
+                        <div class="summary-card-icon" style="background-color: var(--danger-transparent); color: var(--danger-color);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value">{{ $totalUsers }}</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
         </div>
 
