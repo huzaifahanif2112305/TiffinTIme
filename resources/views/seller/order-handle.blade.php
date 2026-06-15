@@ -619,8 +619,8 @@
                     <div class="text-center p-3 bg-light rounded-4 mb-3">
                         @if($order->transaction_id)
                             <i class="fas fa-credit-card text-success fa-2x mb-2"></i>
-                            <h6 class="fw-bold margin-0">Online Payment</h6>
-                            <small class="text-muted">ID: {{ $order->transaction_id }}</small>
+                            <h6 class="fw-bold margin-0">Online Payment ({{ $order->online_payment_platform ? ucfirst($order->online_payment_platform) : 'Paid' }})</h6>
+                            <small class="text-muted d-block mt-1">Transaction ID (UID): <strong>{{ $order->transaction_id }}</strong></small>
                         @else
                             <i class="fas fa-money-bill-wave text-success fa-2x mb-2"></i>
                             <h6 class="fw-bold margin-0">Cash on Delivery</h6>
@@ -628,13 +628,15 @@
                         @endif
                     </div>
 
-                    <div class="alert alert-warning d-flex align-items-center gap-2 mb-0" style="font-size: 0.85rem;">
-                        <i class="fas fa-info-circle"></i>
-                        @if($order->transaction_id)
-                            Payment already verified.
-                        @else
-                            Please create invoice before delivery.
-                        @endif
+                    <div class="alert {{ $order->transaction_id ? 'alert-info' : 'alert-warning' }} d-flex align-items-start gap-2 mb-0" style="font-size: 0.85rem;">
+                        <i class="fas fa-info-circle mt-1"></i>
+                        <div>
+                            @if($order->transaction_id)
+                                <strong>Verify Payment:</strong> Please check your <strong>{{ $order->online_payment_platform ? ucfirst($order->online_payment_platform) : 'Online account' }}</strong> app to verify you received <strong>{{ number_format($order->total_amount) }} PKR</strong> with UID <strong>{{ $order->transaction_id }}</strong> before accepting.
+                            @else
+                                Please collect cash upon delivery.
+                            @endif
+                        </div>
                     </div>
                     @if($order->refund_status && $order->refund_status !== 'none')
                         <div class="alert alert-info d-flex align-items-center gap-2 mb-0 mt-3 text-dark" style="font-size: 0.85rem;">

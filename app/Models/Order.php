@@ -19,6 +19,7 @@ class Order extends Model
         'status',
         'total_amount',
         'transaction_id',
+        'online_payment_platform',
         'cancelled_by',
         'cancellation_reason',
         'cancelled_at',

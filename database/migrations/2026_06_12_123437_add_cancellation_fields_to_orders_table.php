@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->string('cancelled_by')->nullable()->after('status');
+            $table->text('cancellation_reason')->nullable()->after('cancelled_by');
+            $table->timestamp('cancelled_at')->nullable()->after('cancellation_reason');
             $table->string('refund_status')->default('none')->after('cancelled_at'); // 'none', 'pending', 'refunded'
         });
     }
@@ -23,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn(['cancelled_by', 'refund_status']);
+            $table->dropColumn(['cancelled_by', 'cancellation_reason', 'cancelled_at', 'refund_status']);
         });
     }
 };

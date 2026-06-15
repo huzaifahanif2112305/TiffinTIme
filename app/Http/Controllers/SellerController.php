@@ -268,6 +268,27 @@ class SellerController extends Controller
         ));
     }
 
+    public function updatePaymentSettings(Request $request)
+    {
+        $seller = auth()->guard('seller')->user();
+
+        $request->validate([
+            'easypaisa_title' => 'nullable|string|max:255',
+            'easypaisa_number' => 'nullable|string|max:20',
+            'jazzcash_title' => 'nullable|string|max:255',
+            'jazzcash_number' => 'nullable|string|max:20',
+        ]);
+
+        $seller->update([
+            'easypaisa_title' => $request->easypaisa_title,
+            'easypaisa_number' => $request->easypaisa_number,
+            'jazzcash_title' => $request->jazzcash_title,
+            'jazzcash_number' => $request->jazzcash_number,
+        ]);
+
+        return redirect()->back()->with('success', 'Payment settings updated successfully!');
+    }
+
     public function logout(Request $request)
     {
         Auth::guard('seller')->logout();

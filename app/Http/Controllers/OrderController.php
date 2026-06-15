@@ -67,9 +67,15 @@ class OrderController extends Controller
             return redirect()->route('cart.view')->with('error', 'Your cart is empty.');
         }
 
-        return view('checkout.show', compact('cart'));
+        // Get the first service to determine seller (assuming all services are from same seller)
+        $firstServiceId = array_keys($cart)[0];
+        $firstService = $this->getService($firstServiceId);
+        $seller = null;
+        if ($firstService) {
+            $seller = Seller::find($firstService->seller_id);
+        }
 
-
+        return view('checkout.show', compact('cart', 'seller'));
     }
     public function placeOrder(Request $request)
     {
@@ -138,6 +144,7 @@ class OrderController extends Controller
                 'address' => 'required|string|max:255',
                 'phone' => 'required|string|max:15',
                 'payment_method' => 'required|in:cod,online',
+                'online_payment_platform' => 'required_if:payment_method,online|nullable|in:easypaisa,jazzcash',
                 'transaction_id' => 'required_if:payment_method,online|nullable|string|max:255',
             ]);
 
@@ -151,6 +158,7 @@ class OrderController extends Controller
                 'status' => 'pending',
                 'total_amount' => $totalAmount,
                 'transaction_id' => $request->payment_method === 'online' ? $request->transaction_id : null,
+                'online_payment_platform' => $request->payment_method === 'online' ? $request->online_payment_platform : null,
                 'updated_at' => now(),
                 'created_at' => now(),
             ]);

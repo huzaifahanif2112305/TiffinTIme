@@ -451,6 +451,19 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .form-control {
+            border-radius: 12px;
+            padding: 10px 15px;
+            border: 1px solid #e5e7eb;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(226, 55, 68, 0.15);
+            outline: none;
+        }
+
         /* Responsive */
         @media (max-width: 991px) {
             .navbar-collapse {
@@ -494,6 +507,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('seller.earnings') }}">
                             <i class="fas fa-chart-line"></i> View Earnings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#payment-settings">
+                            <i class="fas fa-credit-card"></i> Payment Settings
                         </a>
                     </li>
                     
@@ -738,7 +756,7 @@
                                         <td class="fw-bold text-dark">{{ $order->total_amount }} PKR</td>
                                         <td>
                                             @if($order->transaction_id)
-                                                <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3">Online</span>
+                                                <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3">Online ({{ $order->online_payment_platform ? ucfirst($order->online_payment_platform) : 'Paid' }})</span>
                                             @else
                                                 <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-3">Cash</span>
                                             @endif
@@ -815,6 +833,103 @@
                         </table>
                     </div>
                 @endif
+            </div>
+        </div>
+
+        <!-- Payment Settings Section -->
+        <div class="mb-5" id="payment-settings" data-aos="fade-up">
+            <div class="section-header">
+                <h2 class="section-title">Payment Settings</h2>
+            </div>
+            
+            <div class="custom-table-card" style="background: white; border-radius: 20px; padding: 2rem; box-shadow: var(--card-shadow);">
+                <p class="text-muted mb-4">Set up your EasyPaisa and JazzCash account details to receive online payments from customers. If left empty, online payment will be disabled for your kitchen.</p>
+                
+                @if(session('success') && strpos(session('success'), 'Payment settings') !== false)
+                    <div class="alert alert-success alert-dismissible fade show rounded-3 border-0 mb-4" role="alert" style="background: #dcfce7; color: #166534;">
+                        <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+                
+                <form action="{{ route('seller.payment.update') }}" method="POST">
+                    @csrf
+                    <div class="row g-4">
+                        <!-- EasyPaisa Settings -->
+                        <div class="col-md-6">
+                            <div class="p-4 rounded-4 border" style="background: #fcfcfc; border-color: #e5e7eb; height: 100%;">
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 48px; height: 48px; background: #2ecc71; box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);">
+                                        <i class="fas fa-wallet fa-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold mb-0" style="color: #27ae60;">EasyPaisa</h5>
+                                        <small class="text-muted">Receive payments via EasyPaisa</small>
+                                    </div>
+                                </div>
+                                <hr class="my-3">
+                                <div class="mb-3">
+                                    <label for="easypaisa_title" class="form-label fw-bold">Account Title</label>
+                                    <input type="text" name="easypaisa_title" id="easypaisa_title" class="form-control" 
+                                           value="{{ old('easypaisa_title', auth()->guard('seller')->user()->easypaisa_title) }}" 
+                                           placeholder="e.g. John Doe">
+                                    @error('easypaisa_title')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-0">
+                                    <label for="easypaisa_number" class="form-label fw-bold">Account / Mobile Number</label>
+                                    <input type="text" name="easypaisa_number" id="easypaisa_number" class="form-control" 
+                                           value="{{ old('easypaisa_number', auth()->guard('seller')->user()->easypaisa_number) }}" 
+                                           placeholder="e.g. 03001234567">
+                                    @error('easypaisa_number')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- JazzCash Settings -->
+                        <div class="col-md-6">
+                            <div class="p-4 rounded-4 border" style="background: #fcfcfc; border-color: #e5e7eb; height: 100%;">
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 48px; height: 48px; background: #f39c12; box-shadow: 0 4px 10px rgba(243, 156, 18, 0.2);">
+                                        <i class="fas fa-wallet fa-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold mb-0" style="color: #d35400;">JazzCash</h5>
+                                        <small class="text-muted">Receive payments via JazzCash</small>
+                                    </div>
+                                </div>
+                                <hr class="my-3">
+                                <div class="mb-3">
+                                    <label for="jazzcash_title" class="form-label fw-bold">Account Title</label>
+                                    <input type="text" name="jazzcash_title" id="jazzcash_title" class="form-control" 
+                                           value="{{ old('jazzcash_title', auth()->guard('seller')->user()->jazzcash_title) }}" 
+                                           placeholder="e.g. John Doe">
+                                    @error('jazzcash_title')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-0">
+                                    <label for="jazzcash_number" class="form-label fw-bold">Account / Mobile Number</label>
+                                    <input type="text" name="jazzcash_number" id="jazzcash_number" class="form-control" 
+                                           value="{{ old('jazzcash_number', auth()->guard('seller')->user()->jazzcash_number) }}" 
+                                           placeholder="e.g. 03001234567">
+                                    @error('jazzcash_number')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn btn-gradient">
+                            <i class="fas fa-save me-1"></i> Save Payment Settings
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 

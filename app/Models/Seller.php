@@ -19,6 +19,10 @@ class Seller extends Authenticatable
         'area',
         'accountIsApproved',
         'is_deleted',
+        'easypaisa_title',
+        'easypaisa_number',
+        'jazzcash_title',
+        'jazzcash_number',
     ];
 
     protected $hidden = [

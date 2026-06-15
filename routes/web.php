@@ -52,6 +52,7 @@ Route::middleware(['auth:seller'])->group(function () {
     Route::delete('/seller/delete-service/{id}', [SellerServiceController::class, 'delete'])->name('seller.deleteService');
     Route::get('/search-services', [ServiceController::class, 'searchServices'])->name('search.services');
     Route::get('/seller/earnings', [SellerController::class, 'sellerEarnings'])->name('seller.earnings');
+    Route::post('/seller/payment-settings', [SellerController::class, 'updatePaymentSettings'])->name('seller.payment.update');
 
     // Seller Verification Badge
     Route::get('/seller/verification', [SellerVerificationController::class, 'showForm'])->name('seller.verification.form');
